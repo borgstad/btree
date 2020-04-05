@@ -16,4 +16,3 @@ void diskWrite(Node *node);
 /* auxiliary functions */
 
 int getDiskOffset(Id id);
-static int hash(unsigned char *str);

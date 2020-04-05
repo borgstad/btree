@@ -6,6 +6,8 @@
 #include "io.h"
 
 
+static int hash(unsigned char *str);
+
 /* TODO: fix hack. listSize should be set somewhere else and unallocatedNodes should be dynamically
 allocated */
 DiskNode diskNode = { .n = 0, .listSize = 1000000};

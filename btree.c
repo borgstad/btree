@@ -6,6 +6,8 @@
 #include "io.h"
 
 
+static Id getId();
+
 Btree
 btreeCreate(int minDegree)
 {

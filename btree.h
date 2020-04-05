@@ -16,12 +16,12 @@ struct Node
   int minDegree;
   int levelOrderNr; // level order traversal number
   struct Node **children; // n + 1 child Nodes
-  Id *ids;
+  Id *ids; // random unique id assigned to each node, for hashing
 };
 
 struct ResultSet
 {
-  bool ok;
+  bool ok; // if false, the node is empty and the result is not legal
   Node node;
   int idx;
 };
@@ -35,4 +35,3 @@ Btree btreeCreate(int minDegree);
 Node *allocateNode(int minDegree, int level);
 ResultSet btreeSearch(const Node *node, int k);
 
-static Id getId();
