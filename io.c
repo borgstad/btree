@@ -89,7 +89,7 @@ diskWrite(Node *node)
 }
 
 int
-getDiskOffset(u_int64_t id)
+getDiskOffset(Id id)
 {  
   unsigned char *str;
   /* hash((unsighed char *) id) */

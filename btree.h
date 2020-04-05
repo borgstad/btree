@@ -1,11 +1,12 @@
 #include <stdbool.h>
-
+#include <unistd.h>
  
 typedef struct Node Node;
 typedef struct Btree Btree;
 typedef struct ResultSet ResultSet;
+typedef u_int64_t Id;
 
-extern FILE *fd;
+/* extern FILE *fd; */
 
 struct Node
 {
@@ -15,7 +16,7 @@ struct Node
   int minDegree;
   int levelOrderNr; // level order traversal number
   struct Node **children; // n + 1 child Nodes
-  u_int64_t *ids;
+  Id *ids;
 };
 
 struct ResultSet
@@ -34,4 +35,4 @@ Btree btreeCreate(int minDegree);
 Node *allocateNode(int minDegree, int level);
 ResultSet btreeSearch(const Node *node, int k);
 
-static u_int64_t getId();
+static Id getId();

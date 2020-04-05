@@ -20,12 +20,12 @@ Node *
 allocateNode(int minDegree, int levelOrderNr)
 {
   int *keyList;
-  u_int64_t *ids;
+  Id *ids;
   Node *node_struct;
 
   int typeSize = sizeof(int);
   keyList = malloc(minDegree * typeSize);
-  ids = malloc(sizeof(u_int64_t) * minDegree);
+  ids = malloc(sizeof(Id) * minDegree);
   
   for (int i = 0; i < minDegree; i++)
     {
@@ -75,10 +75,11 @@ btreeSearch(const Node *node, int k)
     }
 }
 
-static u_int64_t
+static Id
 getId()
 {
-  u_int64_t res;
-  getrandom(&res, sizeof(u_int64_t), GRND_RANDOM);
+  Id res;
+  getrandom(&res, sizeof(Id), GRND_RANDOM);
   return res;
 }
+ 

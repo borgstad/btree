@@ -1,6 +1,5 @@
 typedef struct DiskNode DiskNode;
 
-
 /* TODO: fix this hacky thing */
 struct DiskNode
 {
@@ -13,7 +12,8 @@ struct DiskNode
 Node *diskRead(Node *node, int i);
 void diskWrite(Node *node);
 
+
 /* auxiliary functions */
 
-int getDiskOffset(u_int64_t id);
+int getDiskOffset(Id id);
 static int hash(unsigned char *str);
