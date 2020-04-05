@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-I.
 DEPS = btree.h
-OBJ = btree.o main.o
+OBJ = btree.o main.o io.o
 
 TEST = tests/btree_test.o
-TEST_DEP = btree.o
+TEST_DEP = btree.o io.o
 
 
 %.o: %.c $(DEPS)

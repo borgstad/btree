@@ -13,7 +13,16 @@ struct Node
   bool leaf; // is this a leaf?
   int *keys; // array of size n
   int minDegree;
+  int levelOrderNr; // level order traversal number
   struct Node **children; // n + 1 child Nodes
+  u_int64_t *ids;
+};
+
+struct ResultSet
+{
+  bool ok;
+  Node node;
+  int idx;
 };
 
 struct Btree
@@ -21,13 +30,8 @@ struct Btree
   Node *root;
 };
 
-struct ResultSet
-{
-  Node *node;
-  int idx;
-};
+Btree btreeCreate(int minDegree);
+Node *allocateNode(int minDegree, int level);
+ResultSet btreeSearch(const Node *node, int k);
 
-Btree *btreeCreate(int minDegree);
-Node *allocateNode(int minDegree);
-int btreeSearch(Node *node, int k, ResultSet *resultSet);
-Node *diskRead(Node *node, int idx);
+static u_int64_t getId();
