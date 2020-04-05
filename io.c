@@ -6,8 +6,6 @@
 #include "io.h"
 
 
-static int hash(unsigned char *str);
-
 /* TODO: fix hack. listSize should be set somewhere else and unallocatedNodes should be dynamically
 allocated */
 DiskNode diskNode = { .n = 0, .listSize = 1000000};
@@ -98,15 +96,3 @@ getDiskOffset(Id id)
   return 2;
 }
 
-/* djb2 hash function */
-static int hash
-(unsigned char *str)
-{
-  unsigned long hash = 5381;
-  int c;
-
-  while (c = *str++)
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-  return (int) (hash % 1000000) + 1;
-}

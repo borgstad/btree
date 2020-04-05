@@ -1,10 +1,10 @@
 #include <stdbool.h>
-#include <unistd.h>
+#include <stdint.h>
  
 typedef struct Node Node;
 typedef struct Btree Btree;
 typedef struct ResultSet ResultSet;
-typedef u_int64_t Id;
+typedef uint64_t Id;
 
 /* extern FILE *fd; */
 
