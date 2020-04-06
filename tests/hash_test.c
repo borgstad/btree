@@ -11,13 +11,13 @@ hashPutTest()
   HashTable hashTable = createHashTable(hashTableSize);
 
   assert(hashTableSize == hashTable.tableSize);
-  assert(hashTableSize / 1000 == hashTable.unallocatedSize);
+  assert(hashTableSize / 10000 == hashTable.unallocatedSize);
   assert(1 == hashTable.curOffset);
   assert(0 == hashTable.unallocatedN);
   /* Id id = getId(); */
   /* TODO: cannot test function getId since it is static, what to do? */
   Id id = 1128974;
-  printf("%i\n", hash((unsigned char *) &id, hashTableSize));
+  /* printf("%i\n", hash((unsigned char *) &id, hashTableSize)); */
   hashPut(&hashTable, id);
 
   /* printf("test\n"); */
@@ -38,12 +38,18 @@ hashGetTest()
   ids = malloc(sizeof(Id) * idsSize);
   Id test = 10000;
   hash((unsigned char *) &test, hashTableSize);
-  
+
+  int result;
   for (int i = 0; i < idsSize; i++)
     {
+      assert(i == hashTable.hashedN);      
       ids[i] = (Id) random();
-      hashPut(&hashTable, ids[i]);
+      result = hashPut(&hashTable, ids[i]);
+      assert(HASHOK == result); 
     }
+  result = hashPut(&hashTable, ids[0]);
+  assert(HASHFULL == result);
+  
 
   for (int i = 0; i < idsSize; i++)
     {
@@ -56,6 +62,6 @@ hashGetTest()
 int
 main()
 {
-  /* hashPutTest(); */
+  hashPutTest();
   hashGetTest();
 }

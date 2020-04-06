@@ -3,7 +3,6 @@
 #include "hash.h"
 
 
-
 /* djb2 hash function */
 int
 hash(unsigned char *str, int hashTableSize)
@@ -27,26 +26,49 @@ createHashTable(int tableSize)
   HashTable hashTable = {.table = malloc(sizeof(int) * tableSize),
 			 .tableSize = tableSize,
 			 .curOffset = 1,
-			 .unallocatedSize = 100,
-			 .unallocated = malloc(sizeof(int) * tableSize / 1000),
+			 .hashedN = 0,
+			 .hashedMax = tableSize / 10000,
+			 .unallocatedSize = tableSize / 10000,
+			 .unallocated = malloc(sizeof(int) * tableSize / 10000),
 			 .unallocatedN = 0};
   for (int i = 0; i < hashTable.tableSize; i++)
     {
-      hashTable.table[i] = -1;
+      hashTable.table[i] = HASHEMPTY;
     }
   return hashTable;
 }
 
-void
+int
 hashPut(HashTable *hashTable, Id id)
 {
+  if (hashTable -> hashedN >= hashTable -> hashedMax)
+    {
+      return HASHFULL;
+    }
   int hashTableIdx = hash((unsigned char *) &id, hashTable -> tableSize); 
   hashTable -> table[hashTableIdx] = hashTable -> curOffset;
   hashTable -> curOffset++;
+  hashTable -> hashedN++;
+  return HASHOK;
 }
 
 int
 hashGet(const HashTable *hashTable, Id id)
 {
   return hashTable -> table[hash((unsigned char *) &id, hashTable -> tableSize)];
+}
+
+int
+hashDelete(HashTable *hashTable, Id id)
+{
+  int idx = hash((unsigned char *) &id, hashTable -> tableSize);
+  hashTable -> table[idx] = HASHEMPTY;
+  if (hashTable -> hashedN == 0)
+    {
+      return HASHOK;
+    }
+  else
+    {
+      hashTable -> hashedN--;
+    }
 }
