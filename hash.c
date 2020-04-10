@@ -45,8 +45,14 @@ hashPut(HashTable *hashTable, Id id)
     {
       return HASHFULL;
     }
-  int hashTableIdx = hash((unsigned char *) &id, hashTable -> tableSize); 
-  hashTable -> table[hashTableIdx] = hashTable -> curOffset;
+  int hashTableIdx = hash((unsigned char *) &id, hashTable -> tableSize);
+  int curOffset = hashTable -> curOffset;
+  if (hashTable -> unallocatedN > 0)
+    {
+      curOffset = hashTable -> unallocated[hashTable -> unallocatedN];
+      hashTable -> unallocatedN--;
+    }
+  hashTable -> table[hashTableIdx] = curOffset;
   hashTable -> curOffset++;
   hashTable -> hashedN++;
   return HASHOK;
@@ -62,13 +68,17 @@ int
 hashDelete(HashTable *hashTable, Id id)
 {
   int idx = hash((unsigned char *) &id, hashTable -> tableSize);
-  hashTable -> table[idx] = HASHEMPTY;
-  if (hashTable -> hashedN == 0)
+  if (hashTable -> table[idx] == HASHEMPTY)
     {
       return HASHOK;
     }
-  else
+  if (hashTable -> hashedN != 0)
     {
+      hashTable -> unallocated[hashTable -> unallocatedN] = hashTable -> table[idx];
+      hashTable -> unallocatedN++;
+      hashTable -> table[idx] = HASHEMPTY;
       hashTable -> hashedN--;
     }
+  return HASHOK;
 }
+
