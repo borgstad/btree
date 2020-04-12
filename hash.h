@@ -1,3 +1,6 @@
+#include "btree.h"
+
+
 #ifndef HASH_H
 #define HASH_H
 

@@ -14,7 +14,7 @@ typedef struct
 
 
 Node *diskRead(const Node *node, Id id);
-void diskWrite(Node *node);
+void diskWrite(Node *node, Id id);
 
 
 /* auxiliary functions */

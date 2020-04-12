@@ -10,7 +10,7 @@ typedef uint64_t Id;
 
 #ifndef NODE_H
 #define NODE_H
-typedef struct
+typedef struct Node
 {
   int n; // number of keys currently stored in Node
   bool leaf; // is this a leaf?

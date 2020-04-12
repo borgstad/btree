@@ -73,24 +73,28 @@ hashDeleteTest()
   hash((unsigned char *) &test, hashTableSize);
 
   int result;
-  for (int i = 0; i < idsSize; i++)
+  /* add data to hashtable */
+    ;  for (int i = 0; i < idsSize; i++)
     {
       ids[i] = (Id) random();
       result = hashPut(&hashTable, ids[i]);
     }
-  
+  /* delete data from hashtable, and check that the number of unallocated elements is */
+  /*   increments */
   for (int i = 0; i < 10; i++)
     {
       assert(i == hashTable.unallocatedN);
       hashDelete(&hashTable, ids[i]);
     }
-
-  Id idPut; 
+  /* put elements back into hash table and check that the unallocatedN is decremented */
+  Id idPut;
+  int curOffset = hashTable.curOffset;
   for (int i = 10; i > 0; i--)
     {
-      idPut = (Id) random();      
+      idPut = (Id) random();
       assert(i == hashTable.unallocatedN);
       hashPut(&hashTable, ids[i]);
+      assert(curOffset == hashTable.curOffset);
     }
 }
 

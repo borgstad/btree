@@ -59,9 +59,23 @@ hashPut(HashTable *hashTable, Id id)
 }
 
 int
-hashGet(const HashTable *hashTable, Id id)
+hashGet(const HashTable *hashTable, Id id, int *value)
 {
-  return hashTable -> table[hash((unsigned char *) &id, hashTable -> tableSize)];
+  unsigned char *idConv = (unsigned char *) &id;
+  int tableSize = hashTable -> tableSize;
+  int retVal =  hashTable -> table[hash(idConv, tableSize)];
+  if (retVal > 0)
+    {
+      *value = retVal;
+      return HASHOK;
+    }
+  else
+    {
+      return retVal;
+    }
+  
+    
+  /* return hashTable -> table[hash((unsigned char *) &id, hashTable -> tableSize)]; */
 }
 
 int
@@ -81,4 +95,3 @@ hashDelete(HashTable *hashTable, Id id)
     }
   return HASHOK;
 }
-

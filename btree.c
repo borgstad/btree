@@ -13,37 +13,36 @@ btreeCreate(int minDegree)
 {
   
   Btree BtreeStruct;
-  Node *rootT = allocateNode(minDegree, 0);
+  Node *rootT = allocateNode(minDegree);
   BtreeStruct.root = rootT;
   return BtreeStruct;
 }
 
 Node *
-allocateNode(int minDegree, int levelOrderNr)
+allocateNode(int minDegree)
 {
-  int *keyList;
+  int *data;
   Id *ids;
   Node *node_struct;
 
   int typeSize = sizeof(int);
-  keyList = malloc(minDegree * typeSize);
+  data = malloc(minDegree * typeSize);
   ids = malloc(sizeof(Id) * minDegree);
   
   for (int i = 0; i < minDegree; i++)
     {
-      keyList[i] = 0;
       ids[i] = getId();
     }
   
-  node_struct = malloc(sizeof(struct Node));
+  node_struct = malloc(sizeof(Node));
   node_struct -> n = 0;
   node_struct -> leaf = true;
-  node_struct -> keys = keyList;
+  node_struct -> data = data;
   node_struct -> minDegree = minDegree;
-  node_struct -> levelOrderNr = levelOrderNr;
+  node_struct -> maxDegree = 2 * minDegree - 1;
   node_struct -> ids = ids;
   // TODO: should children be allocated on insertion instead of at node allocation time?
-  node_struct -> children = malloc(sizeof(struct Node) * minDegree);
+  node_struct -> children = malloc(sizeof(Node) * (2 * minDegree - 1));
   return node_struct;
 }
 
@@ -51,14 +50,14 @@ ResultSet
 btreeSearch(const Node *node, int k)
 {
   int i = 0;
-  int *keys = node -> keys;
+  int *data = node -> data;
   ResultSet resultSet;
   
-  while (i <= node -> n && k > keys[i])
+  while (i <= node -> n && k > data[i])
     {
       i = i + 1;
     }
-  if (i <= node -> n && k == keys[i])
+  if (i <= node -> n && k == data[i])
     {
       resultSet.ok = true;
       resultSet.node = *node;
@@ -72,7 +71,7 @@ btreeSearch(const Node *node, int k)
     }
   else
     {
-      Node *childNode = diskRead(node -> children[i], i);
+      Node *childNode = diskRead(node, node -> ids[i]);
       btreeSearch(childNode, k);
     }
 }
