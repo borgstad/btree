@@ -1,6 +1,5 @@
-#include "btree.h"
-
-typedef struct HashTable HashTable;
+#ifndef HASH_H
+#define HASH_H
 
 enum hashReturn {
 		 HASHOK = -1,
@@ -9,7 +8,7 @@ enum hashReturn {
 };
 	     
 
-struct HashTable
+typedef struct
 {
   int *table;
   int tableSize;
@@ -19,10 +18,11 @@ struct HashTable
   int unallocatedSize;
   int *unallocated;
   int unallocatedN;
-};
+} HashTable;
+#endif
 
-int hash(unsigned char *str, int hashTableSize);
 HashTable createHashTable(int tableSize);
+int hash(unsigned char *str, int hashTableSize);
 int hashPut(HashTable *hashTable, Id id);
-int hashGet(const HashTable *hashTable, Id id);
+int hashGet(const HashTable *hashTable, Id id, int *value);
 int hashDelete(HashTable *hashTable, Id id);
