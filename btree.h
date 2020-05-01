@@ -28,7 +28,8 @@ typedef struct
   int idx;
 } ResultSet;
 
-typedef struct 
+/* TODO: minDegree and maxDegree should be a member of btree and not the node  */
+typedef struct
 {
   Node *root;
 } Btree;

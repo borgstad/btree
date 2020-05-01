@@ -10,11 +10,15 @@ static Id getId();
 
 Btree
 btreeCreate(int minDegree)
-{
-  
+{  
   Btree BtreeStruct;
   Node *rootT = allocateNode(minDegree);
   BtreeStruct.root = rootT;
+  initialize(1000000, 10000000);
+  for (int i = 0; i < minDegree; i++)
+    {
+       registerNode(rootT -> ids[i]);
+    }
   return BtreeStruct;
 }
 
@@ -24,10 +28,11 @@ allocateNode(int minDegree)
   int *data;
   Id *ids;
   Node *node_struct;
+  int maxDegree = 2 * minDegree - 1;
 
   int typeSize = sizeof(int);
-  data = malloc(minDegree * typeSize);
-  ids = malloc(sizeof(Id) * minDegree);
+  data = malloc(maxDegree * typeSize);
+  ids = malloc(maxDegree * sizeof(Id));
   
   for (int i = 0; i < minDegree; i++)
     {
@@ -41,8 +46,7 @@ allocateNode(int minDegree)
   node_struct -> minDegree = minDegree;
   node_struct -> maxDegree = 2 * minDegree - 1;
   node_struct -> ids = ids;
-  // TODO: should children be allocated on insertion instead of at node allocation time?
-  node_struct -> children = malloc(sizeof(Node) * (2 * minDegree - 1));
+  node_struct -> children = malloc(sizeof(Node) * (2 * minDegree));
   return node_struct;
 }
 

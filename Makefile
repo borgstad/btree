@@ -5,6 +5,8 @@ OBJ = btree.o main.o io.o hash.o
 
 TEST_HASH = tests/hash_test.o
 TEST_BTREE = tests/btree_test.o
+TEST_IO = tests/io_test.o
+
 TEST_DEP = btree.o io.o hash.o
 
 
@@ -25,5 +27,8 @@ test_btree: $(TEST_BTREE) $(TEST_DEP)
 test_hash: $(TEST_HASH) $(TEST_DEP)	
 	$(CC) $(TEST_HASH) $(TEST_DEP) -o $@ && ./test_hash
 
+.PHONY: test_io
+test_io: $(TEST_IO) $(TEST_DEP)	
+	$(CC) $(TEST_IO) $(TEST_DEP) -o $@ && ./test_io
 
 
