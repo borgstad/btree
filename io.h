@@ -16,8 +16,8 @@ typedef struct
 
 #endif
 
-Node *diskRead(const Node *node, Id id);
-void diskWrite(Node *node, Id id);
+Node diskRead(Id id, int maxDegree);
+void diskWrite(const Node node, Id id, int maxDegree);
 void initialize(int listSize, int hashTableSize);
 void registerNode(Id nodeId);
 

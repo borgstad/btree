@@ -15,15 +15,9 @@ static DiskNode diskNode;
 
 void initialize(int listSize, int hashTableSize)
 {
-  /* TODO: how to insure singleton class initialization */
-  static int i = 0;
-  if (i == 0)
-    {
-      diskNode = (DiskNode) { .n = 0,
-			      .listSize = 1000000,
-			      .hashTable = createHashTable(10000000)};
-    }
-  i++;
+  diskNode = (DiskNode) { .n = 0,
+        .listSize = 1000000,
+        .hashTable = createHashTable(10000000)};
 }
 
 void registerNode(Id nodeId)
@@ -31,71 +25,57 @@ void registerNode(Id nodeId)
   hashPut(&diskNode.hashTable, nodeId);  
   diskNode.n += 1; 
 }
-  
 
-Node *diskRead(const Node *nodeIn, Id id)
+void
+diskWrite(const Node node, Id id, int maxDegree)
 {
-  printf("before fopen\n");
+  FILE *fd = fopen("index.b", "w+");
+  int fildes = fileno(fd); 
+  int sizeNodeStruct = sizeof(Node);
+  int sizeData = sizeof(int) * maxDegree;
+  int sizeIds = sizeof(Id) * maxDegree;
+  int baseOffset;
+  int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
+  baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
+  assert(HASHOK == returnCode);
 
-  Node *node = malloc(sizeof(Node));
-  int *data = malloc(sizeof(int) * node -> maxDegree);
-  Id *ids = malloc(sizeof(int) * node -> maxDegree);
+  pwrite(fildes, &node, sizeNodeStruct, baseOffset);    
+  pwrite(fildes, &(node.data), sizeData, baseOffset + sizeNodeStruct);
+  pwrite(fildes, &(node.ids), sizeIds, baseOffset + sizeNodeStruct + sizeData);
+
+  diskNode.n += 1;
+  fclose(fd);
+}
+
+
+Node diskRead(Id id, int maxDegree)
+{
+
+  // int *data = malloc(maxDegree * sizeof(int));
+  Node node = (Node) {
+    .n = 0,
+    .leaf = true,
+    .data = malloc(maxDegree * sizeof(int)),
+    .ids = malloc(maxDegree * sizeof(Id)),
+    .n_ids = 0};
   
   FILE *fd = fopen("index.b", "r");
   int filedes = fileno(fd);
   int sizeNodeStruct = sizeof(Node);
-  int sizeData = sizeof(int *) * nodeIn -> maxDegree;
-  int sizeIds = sizeof(int *) * nodeIn -> maxDegree;
+  int sizeData = sizeof(int) * maxDegree;
+  int sizeIds = sizeof(Id) * maxDegree;
   int baseOffset;
   int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
   assert(HASHOK == returnCode);  
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
 
+  int t= (sizeNodeStruct + sizeData + sizeIds);
   pread(filedes, &node, sizeNodeStruct, baseOffset);
-  pread(filedes, &data, sizeData, baseOffset + sizeNodeStruct);
-  pread(filedes, &ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
+  pread(filedes, *node.data, sizeData, baseOffset + sizeNodeStruct);
+  pread(filedes, *node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
   
-  node -> data;
-  node -> ids = ids;
-  node -> children = malloc(sizeof(Node) * (2 * node -> maxDegree));
-  
-  printf("test, n: %i, maxdegree:%i, mindegree: %i\n", node -> n, node -> maxDegree, node -> minDegree);
   /* TODO: why cant i use fclose? */
   /* fclose(fd);   */  
   close(filedes);
-  printf("*ASDASD\n");
   return node;
-}
-
-void
-diskWrite(Node *node, Id id)
-{
-  FILE *fd = fopen("index.b", "w+");
-  int fildes = fileno(fd);
-  int sizeNodeStruct = sizeof(Node);
-  int sizeData = sizeof(int *) * node -> maxDegree;
-  int sizeChildren = sizeof(Node *) * (node -> maxDegree);
-  int idSize = sizeof(int) * (node -> maxDegree);
-  int baseOffset;
-  int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
-  baseOffset *= (sizeNodeStruct + sizeData + sizeChildren);
-  assert(HASHOK == returnCode);
-
-  pwrite(fildes, &node, sizeNodeStruct, baseOffset);    
-  pwrite(fildes, &(node -> data), sizeData, baseOffset + sizeNodeStruct);
-  pwrite(fildes, &(node -> ids), idSize, baseOffset + sizeNodeStruct + sizeData);
-  /* freeNode(node) */
-  diskNode.n += 1;
-  fclose(fd);
-}
-
-void freeNode(Node *node)
-{
-  for (int i = 0; i < node -> n; i++)
-    {
-      /* TODO */
-    }
-  free(node -> data);
-  /* free(node -> children); */
-  free(node);
 }

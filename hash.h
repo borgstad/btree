@@ -10,7 +10,6 @@ enum hashReturn {
 		 HASHFULL = -3
 };
 	     
-
 typedef struct
 {
   int *table;

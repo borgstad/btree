@@ -14,9 +14,7 @@ hash(unsigned char *str, int hashTableSize)
     {
       c = *str++;
       hashVal = ((hashVal << 5) + hashVal) + c; /* hash * 33 + c */
-      /* printf("%i\n", hashVal); */
     }
-  
   return (int) (hashVal % hashTableSize) + 1;
 }
 

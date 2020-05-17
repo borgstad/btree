@@ -21,6 +21,7 @@ test_all: test_btree test_hash
 tests/%.o: tests/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+.PHONY: test_btree
 test_btree: $(TEST_BTREE) $(TEST_DEP)	
 	$(CC) $(TEST_BTREE) $(TEST_DEP) -o $@ && ./test_btree
 

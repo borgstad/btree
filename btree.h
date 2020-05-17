@@ -15,10 +15,8 @@ typedef struct Node
   int n; // number of keys currently stored in Node
   bool leaf; // is this a leaf?
   int *data; // array of size n 
-  int minDegree;
-  int maxDegree;
-  struct Node **children; // n + 1 child Nodes
   Id *ids; // random unique id assigned to each node, for hashing
+  int n_ids;
 } Node;
 
 typedef struct 
@@ -31,10 +29,10 @@ typedef struct
 /* TODO: minDegree and maxDegree should be a member of btree and not the node  */
 typedef struct
 {
-  Node *root;
+  Node root;
 } Btree;
 #endif
 
-Btree btreeCreate(int minDegree);
-Node *allocateNode(int minDegree);
-ResultSet btreeSearch(const Node *node, int k);
+Btree btreeInit(int minDegree);
+Node btreeCreateNode(Id id);
+ResultSet btreeSearch(const Node node, int k);
