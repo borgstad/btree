@@ -18,45 +18,33 @@ btreeInit(int minDegree)
   MAXDEGREE = 2 * minDegree - 1;
   initialize(1000000, 10000000);
   Node rootT = btreeCreateNode(0);
+  diskWrite(rootT, 0, MAXDEGREE);
   BtreeStruct.root = rootT;
   return BtreeStruct;
 }
-
-
-// Btree
-// btreeCreate(int minDegree, int id)
-// {
-//   Btree BtreeStruct;
-//   Node *rootT = btreeCreateNode(minDegree);
-//   return BtreeStruct;
-// }
 
 Node
 btreeCreateNode(Id id)
 {
   int *data;
   Id *ids;
-  Node node_struct;
-
   
-  data = malloc(MAXDEGREE * sizeof(int));
   ids = malloc(MAXDEGREE * sizeof(Id));
-  // for (int i = 0; i < MAXDEGREE; i++)
-  //   {
-  //     data[i] = -1;
-  //     ids[i] = getId();
-  //   }
+  for (int i = 0; i < MAXDEGREE; i++)
+    {
+      ids[i] = getId();
+    }
   
-  node_struct = (Node) {
+  Node node = (Node) {
     .n = 0,
     .leaf = true,
-    .data = data,
+    .data = malloc(MAXDEGREE * sizeof(int)),
     .ids = ids,
     .n_ids = 0};
-  // node_struct.children = malloc(sizeof(Node) * (2 * minDegree));
   registerNode(id);
-  diskWrite(node_struct, id, MAXDEGREE);
-  return node_struct;
+  // TODO: Write on creation or not?
+  // diskWrite(node, id, MAXDEGREE);
+  return node;
 }
 
 ResultSet
