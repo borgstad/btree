@@ -2,133 +2,220 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include "btree.h"
 #include "io.h"
-
-int
-testBtreeInit(int minDegree)
-{
-  Btree bt = btreeInit(minDegree);
-  Node nodeRoot = bt.root;
-  assert(0 == nodeRoot.n);
-  assert(true == nodeRoot.leaf);
-  assert(0 == nodeRoot.n_ids);
-  return 0;
-}
-
-
-int 
-testBtreeCreateNode(int minDegree)
-{
-  Btree bt = btreeInit(minDegree);
-  Node childNode = btreeCreateNode(bt.root.ids[0]);
-  assert(0 == childNode.n);
-  assert(true == childNode.leaf);
-  assert(0 == childNode.n_ids);
-  return 0;
-}
-
 
 Btree initializeFullBtree(int minDegree)
 {
   Btree bt = btreeInit(minDegree);
   Node nodeRoot = bt.root;
 
-  nodeRoot.leaf = false;
-  nodeRoot.n = minDegree;
   int buffer = 0;
   int maxDegree = minDegree * 2 - 1;
-
+  nodeRoot.n = maxDegree;
+  nodeRoot.leaf = false;
   nodeRoot.n_ids = minDegree * 2;
+
   Node iter_node;
-  iter_node = diskRead(0, maxDegree);
-//   for (int i = 0; i < nodeRoot.n_ids; i++)
-//     {
-//       iter_node = btreeCreateNode(nodeRoot.ids[i]);
-//   //     // for (int j = 0; j < maxDegree; j++)
-//   //     //   {
-//   //     //     iter_node.data[j] = (nodeRoot.n) * i + j + buffer;
-//   //     //   }
-//   //     // buffer++;
-//   //     // nodeRoot.data[i] = (nodeRoot.n) * (i + 1) + buffer;
-//   //     // buffer += 1;
-//     }
+  Id cur_id;
+  for (int i = 0; i < maxDegree; i++)
+  {
+    cur_id = nodeRoot.ids[i];
+
+    iter_node = btreeAllocateNode(cur_id);
+    iter_node.n = maxDegree;
+    iter_node.n_ids = 0;
+    iter_node.leaf = true;
+    for (int j = 0; j < maxDegree; j++)
+    {
+      iter_node.data[j] = (nodeRoot.n) * i + j + buffer;
+      // printf("%i\n", iter_node.data[j]);
+    }
+    diskWrite(iter_node, cur_id, maxDegree);
+    nodeRoot.data[i] = (nodeRoot.n) * (i + 1) + buffer;
+    buffer++;
+    // printf("%i - \n", nodeRoot.data[i]);
+  }
+
+  diskWrite(nodeRoot, 0, maxDegree);
+
+  nodeRoot = diskRead(0, maxDegree);
+  int value = 0;
+  for (int i = 0; i < maxDegree; i++)
+  {
+    cur_id = nodeRoot.ids[i];
+    iter_node = diskRead(cur_id, maxDegree);
+    for (int j = 0; j < maxDegree; j++)
+    {
+      assert(value == iter_node.data[j]);
+      // printf("%i\n", iter_node.data[j]);
+      value++;
+    }
+    assert(value == nodeRoot.data[i]);
+    // printf("%i, \t %i\n", nodeRoot.data[i], i);
+    value++;
+  }
+  bt.root = nodeRoot;
   return bt;
 }
 
-
-// /* Check struct fields of Btree and nodes are as expected */
-// int
-// btreeTest()
-// {
-//   int minDegree = 10;
-//   Btree bt = initializeFullBtree(minDegree);
-//   Node *node = bt.root;
-//   assert(minDegree == node -> minDegree);
-//   assert(false == node -> leaf);
-  
-//   assert(minDegree * 2 - 1 == node -> maxDegree);  
-//   assert(node -> n == minDegree);  
-//   /* printf("val: %i\n", (int) node -> ids[0]); */
-//   int test = 0;
-//   for (int i = 0; i < node -> n; i++)
-//     {
-//       for (int j = 0; j < node -> n + 1; j++)
-// 	{
-// 	  assert(test == node -> children[i] -> data[j]);
-// 	  test++;
-// 	}
-//       assert(test == node -> data[i]);
-//       test++;
-//     }
-//   return 0;
-// }
-
-// /* simple btree containing only root node */
-// int
-// btreeSearchSimpleTest()
-// {
-//   int minDegree = 10;
-//   Btree bt = btreeCreate(minDegree);
-//   Node *node = bt.root;
-//   int *keyList = node -> data;
-//   ResultSet resultSet;
-//   node -> n = 10;
-  
-//   for (int i = 0; i < node -> n; i++)
-//     {
-//       keyList[i] = i;
-//     }
-//   for (int i = 0; i < node -> n; i++)
-//     {
-//         resultSet = btreeSearch(node, i);
-// 	assert(i == resultSet.idx);
-//     }
-//   printf("node size %i'n\n", (int) sizeof(Node));
-//   printf("node  %i'n\n", (int) sizeof(bool));
-// }
-
-// int
-// btreeSearchThreeChildrenTest()
-// {
-//   int minDegree = 10;
-//   Btree bt = initializeFullBtree(minDegree);
-//   Node *node = bt.root;
-  
-// }
-
-
-
-int
-main()
+void testBtreeSearch(int minDegree)
 {
-    testBtreeInit(10);
-    testBtreeCreateNode(10);
-    // initializeFullBtree(10);
-//   btreeTest();
-  /* TMPTEST(); */
-  /* btreeSearchSimpleTest(); */
-  /* testHashing(); */
-  /* ioSimpleTest(); */
-  /* ioAdvancedTest();   */
+  Btree bt = initializeFullBtree(minDegree);
+  Node nodeRoot = bt.root;
+  int maxDegree = minDegree * 2 - 1;
+  ResultSet resultSet = btreeSearch(nodeRoot, 6);
+  if (resultSet.ok)
+  {
+    // printf("done\n");
+    // printf("idx: %i\n", resultSet.idx);
+    // printf("%i\n", resultSet.node.data[resultSet.idx]);
+  }
+}
+
+void testBtreeSplitChild(int minDegree)
+{
+  int maxDegree = minDegree * 2 - 1;
+  Btree bt = initializeFullBtree(minDegree);
+  Node nodeRoot = bt.root;
+  nodeRoot.n_ids = 4;
+  nodeRoot.n = 3;
+  btreeSplitChild(nodeRoot, 0, 1);
+  Node iter_node;
+  nodeRoot = diskRead(0, maxDegree);
+  btreeSplitChild(nodeRoot, 0, 3);
+  nodeRoot = diskRead(0, maxDegree);
+  printf("\n");
+  for (int i = 0; i < nodeRoot.n_ids; i++)
+  {
+    iter_node = diskRead(nodeRoot.ids[i], maxDegree);
+    for (int j = 0; j < iter_node.n; j++)
+    {
+      printf("%i\n", iter_node.data[j]);
+    }
+    if (i < nodeRoot.n)
+    {
+      printf("%i -\n", nodeRoot.data[i]);
+    }
+  }
+}
+
+int *randomList(int listLength)
+{
+  int *randList = malloc(sizeof(int) * listLength);
+  for (int i = 0; i < listLength; i++)
+  {
+    randList[i] = rand();
+  }
+  return randList;
+}
+
+void testBtreeInsertNonFullRoot(int minDegree)
+{
+  int maxDegree = minDegree * 2 - 1;
+  int *randList;
+  Node nodeRoot;
+  for (int i = 0; i < 10; i++)
+  {
+    randList = randomList(maxDegree);
+    Node nodeRoot = btreeInit(minDegree).root;
+    for (int j = 0; j < maxDegree; j++)
+    {
+      btreeInsertNonfull(nodeRoot, 0, randList[j]);
+      nodeRoot = diskRead(0, maxDegree);
+    }
+    int tmp = 0;
+    for (int j = 0; j < nodeRoot.n; j++)
+    {
+      // printf("%i < %i\n", tmp, nodeRoot.data[j]);
+      assert(tmp <= nodeRoot.data[j]);
+      tmp = nodeRoot.data[j];
+    }
+    free(randList);
+  }
+}
+
+void testBtreeInsertNonFullChild(int minDegree)
+{
+  int maxDegree = minDegree * 2 - 1;
+  int *randList;
+
+  Node nodeRoot = initializeFullBtree(minDegree).root;
+  nodeRoot.n--;
+  diskWrite(nodeRoot, 0, maxDegree);
+  nodeRoot = diskRead(0, maxDegree);
+
+  btreeInsertNonfull(nodeRoot, 0, 2);
+  // nodeRoot = diskRead(0, maxDegree);
+}
+
+void printSortedBtree(Node node, int maxDegree)
+{
+  if (node.leaf == true)
+  {
+    for (int i = 0; i < node.n; i++)
+    {
+      printf("%i \n", node.data[i]);
+    }
+  }
+  else
+  {
+    Node childNode;
+    for (int i = 0; i < node.n_ids; i++)
+    {
+      childNode = diskRead(node.ids[i], maxDegree);
+      // printf("n: ", childNode.n);
+      printSortedBtree(childNode, maxDegree);
+      if (i < node.n)
+      {
+        printf("%i -\n", node.data[i]);
+      }
+    }
+  }
+
+  // Node iter_node;
+  // Node nodeRoot = node;
+
+  // for (int j = 0; j < nodeRoot.n; j++)
+  // {
+  //   printf("%i\n", nodeRoot.data[j]);
+  // }
+  // for (int i = 0; i < nodeRoot.n_ids; i++)
+  // {
+  //   iter_node = diskRead(nodeRoot.ids[i], maxDegree);
+  //   for (int j = 0; j < iter_node.n; j++)
+  //   {
+  //     printf("%i\n", iter_node.data[j]);
+  //   }
+  //   // printf("\n");
+  //   if (i < nodeRoot.n)
+  //   {
+  //     printf("%i -\n", nodeRoot.data[i]);
+  //   }
+  // }
+}
+
+void testBtreeInsert(int minDegree)
+{
+  int maxDegree = minDegree * 2 - 1;
+  Btree bt = btreeInit(minDegree);
+  for (int i = 0; i < maxDegree + 4; i++)
+  {
+    bt = btreeInsert(bt, i);
+    bt.root = diskRead(bt.id, maxDegree);
+  }
+  printf("nids %i\n", bt.root.n_ids);
+  printf("n %i\n\n", bt.root.n);
+  printSortedBtree(bt.root, maxDegree);
+}
+
+int main()
+{
+  // initializeFullBtree(3);
+  // testBtreeSearch(5);
+  // testBtreeSplitChild(4);
+  // testBtreeInsertNonFullRoot(2);
+  // testBtreeInsertNonFullChild(3);
+  testBtreeInsert(3);
 }
