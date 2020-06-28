@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I. -g
 DEPS = btree.h io.h hash.h
 OBJ = btree.o main.o io.o hash.o
 
@@ -13,7 +13,7 @@ TEST_DEP = btree.o io.o hash.o
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-btree: $(OBJ)
+main: $(OBJ)
 	$(CC) $(OBJ) -o $@
 
 test_all: test_btree test_hash

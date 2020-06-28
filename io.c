@@ -27,7 +27,7 @@ void registerNode(Id nodeId)
 Node diskRead(Id id, int maxDegree)
 {
   int *data = malloc(maxDegree * sizeof(int));
-  Id *ids = malloc(maxDegree * sizeof(Id));
+  Id *ids = malloc((maxDegree + 1) * sizeof(Id));
   Node node = (Node){
       .n = 0,
       .leaf = true,
@@ -39,7 +39,7 @@ Node diskRead(Id id, int maxDegree)
   int filedes = fileno(fd);
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
-  int sizeIds = sizeof(Id) * maxDegree;
+  int sizeIds = sizeof(Id) * (maxDegree + 1);
   int baseOffset;
   int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
   assert(HASHOK == returnCode);
@@ -67,7 +67,7 @@ void diskWrite(const Node node, Id id, int maxDegree)
   int fildes = fileno(fd);
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
-  int sizeIds = sizeof(Id) * maxDegree;
+  int sizeIds = sizeof(Id) * (maxDegree + 1);
   int baseOffset;
   int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);

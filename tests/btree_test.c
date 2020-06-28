@@ -200,14 +200,18 @@ void testBtreeInsert(int minDegree)
 {
   int maxDegree = minDegree * 2 - 1;
   Btree bt = btreeInit(minDegree);
+  // for (int i = 0; i < maxDegree; i++)
   for (int i = 0; i < maxDegree + 4; i++)
   {
     bt = btreeInsert(bt, i);
     bt.root = diskRead(bt.id, maxDegree);
   }
-  printf("nids %i\n", bt.root.n_ids);
+  // bt.root = diskRead(bt.id, maxDegree);
+  printf("\nnids %i\n", bt.root.n_ids);
   printf("n %i\n\n", bt.root.n);
   printSortedBtree(bt.root, maxDegree);
+
+  // printf("n %i\n", diskRead(bt.root.ids[1], maxDegree).n);
 }
 
 int main()
