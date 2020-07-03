@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <sys/time.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -161,21 +162,27 @@ void inorderTraversal(Node node, int maxDegree)
   }
 }
 
-void testBtreeBigInsert(int minDegree)
+long long timeInMilliseconds(void)
+{
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+  return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
+}
+
+void testBtreeBigInsert(int minDegree, int nInsertions)
 {
   int maxDegree = minDegree * 2 - 1;
   Btree bt = btreeInit(minDegree);
-  for (int i = 0; i < maxDegree + 25; i++)
+
+  long t = timeInMilliseconds();
+  for (int i = 0; i < nInsertions; i++)
   {
     bt = btreeInsert(bt, i);
     bt.root = diskRead(bt.id, maxDegree);
   }
-  // inorderTraversal(bt.root, maxDegree);
-  for (int i = 0; i < maxDegree + 25; i++)
-  {
-    // printf("%i\n", i);
-    assert(btreeSearch(bt.root, i).ok);
-  }
+  // printf("Time in millis: %lli\n", timeInMilliseconds() - t);
+  // printf("Time in millis per item: %f\n", (float)(timeInMilliseconds() - t) / nInsertions);
 }
 
 int main()
@@ -185,5 +192,5 @@ int main()
   // testBtreeSplitChild(4);
   testBtreeInsertNonFullRoot(2);
   testBtreeInsertNonFullChild(3);
-  testBtreeBigInsert(3);
+  testBtreeBigInsert(3, 1000);
 }
