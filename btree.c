@@ -54,9 +54,9 @@ btreeSearch(const Node node, int k)
   int i = 0;
   ResultSet resultSet;
 
-  while (i <= node.n && k > node.data[i])
+  while (i < node.n && k > node.data[i])
   {
-    i = i + 1;
+    i++;
   }
   if (i <= node.n && k == node.data[i])
   {
