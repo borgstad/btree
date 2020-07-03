@@ -30,12 +30,10 @@ Btree initializeFullBtree(int minDegree)
     for (int j = 0; j < maxDegree; j++)
     {
       iter_node.data[j] = (nodeRoot.n) * i + j + buffer;
-      // printf("%i\n", iter_node.data[j]);
     }
     diskWrite(iter_node, cur_id, maxDegree);
     nodeRoot.data[i] = (nodeRoot.n) * (i + 1) + buffer;
     buffer++;
-    // printf("%i - \n", nodeRoot.data[i]);
   }
 
   diskWrite(nodeRoot, 0, maxDegree);
@@ -49,11 +47,9 @@ Btree initializeFullBtree(int minDegree)
     for (int j = 0; j < maxDegree; j++)
     {
       assert(value == iter_node.data[j]);
-      // printf("%i\n", iter_node.data[j]);
       value++;
     }
     assert(value == nodeRoot.data[i]);
-    // printf("%i, \t %i\n", nodeRoot.data[i], i);
     value++;
   }
   bt.root = nodeRoot;
@@ -66,12 +62,7 @@ void testBtreeSearch(int minDegree)
   Node nodeRoot = bt.root;
   int maxDegree = minDegree * 2 - 1;
   ResultSet resultSet = btreeSearch(nodeRoot, 6);
-  if (resultSet.ok)
-  {
-    // printf("done\n");
-    // printf("idx: %i\n", resultSet.idx);
-    // printf("%i\n", resultSet.node.data[resultSet.idx]);
-  }
+  assert(resultSet.ok)
 }
 
 void testBtreeSplitChild(int minDegree)
@@ -128,7 +119,6 @@ void testBtreeInsertNonFullRoot(int minDegree)
     int tmp = 0;
     for (int j = 0; j < nodeRoot.n; j++)
     {
-      // printf("%i < %i\n", tmp, nodeRoot.data[j]);
       assert(tmp <= nodeRoot.data[j]);
       tmp = nodeRoot.data[j];
     }
@@ -147,7 +137,6 @@ void testBtreeInsertNonFullChild(int minDegree)
   nodeRoot = diskRead(0, maxDegree);
 
   btreeInsertNonfull(nodeRoot, 0, 2);
-  // nodeRoot = diskRead(0, maxDegree);
 }
 
 void inorderTraversal(Node node, int maxDegree)
