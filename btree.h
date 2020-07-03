@@ -1,37 +1,42 @@
 #include <stdbool.h>
-#include <unistd.h>
- 
-typedef struct Node Node;
-typedef struct Btree Btree;
-typedef struct ResultSet ResultSet;
-typedef u_int64_t Id;
+#include <stdint.h>
+
+/* typedef struct Node Node; */
+/* typedef struct Btree Btree; */
+/* typedef struct ResultSet ResultSet; */
+typedef uint64_t Id;
 
 /* extern FILE *fd; */
 
-struct Node
+#ifndef NODE_H
+#define NODE_H
+typedef struct Node
 {
-  int n; // number of keys currently stored in Node
+  int n;     // number of keys currently stored in Node
   bool leaf; // is this a leaf?
-  int *keys; // array of size n
-  int minDegree;
-  int levelOrderNr; // level order traversal number
-  struct Node **children; // n + 1 child Nodes
-  Id *ids; // random unique id assigned to each node, for hashing
-};
+  int *data; // array of size n
+  Id *ids;   // random unique id assigned to each node, for hashing
+  int n_ids;
+} Node;
 
-struct ResultSet
+typedef struct ResultSet
 {
   bool ok; // if false, the node is empty and the result is not legal
   Node node;
   int idx;
-};
+} ResultSet;
 
-struct Btree
+/* TODO: minDegree and maxDegree should be a member of btree and not the node  */
+typedef struct
 {
-  Node *root;
-};
+  Node root;
+  Id id;
+} Btree;
+#endif
 
-Btree btreeCreate(int minDegree);
-Node *allocateNode(int minDegree, int level);
-ResultSet btreeSearch(const Node *node, int k);
-
+Btree btreeInit(int minDegree);
+Node btreeAllocateNode(Id id);
+ResultSet btreeSearch(const Node node, int k);
+void btreeSplitChild(Node x, Id x_id, int index);
+void btreeInsertNonfull(Node x, Id x_id, int value);
+Btree btreeInsert(Btree T, int value);
