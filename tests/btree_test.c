@@ -62,7 +62,7 @@ void testBtreeSearch(int minDegree)
   Node nodeRoot = bt.root;
   int maxDegree = minDegree * 2 - 1;
   ResultSet resultSet = btreeSearch(nodeRoot, 6);
-  assert(resultSet.ok)
+  assert(resultSet.ok);
 }
 
 void testBtreeSplitChild(int minDegree)
@@ -173,10 +173,10 @@ void testBtreeInsert(int minDegree)
 
 int main()
 {
-  // initializeFullBtree(3);
-  // testBtreeSearch(5);
-  // testBtreeSplitChild(4);
+  initializeFullBtree(3);
+  testBtreeSearch(5);
+  testBtreeSplitChild(4);
   // testBtreeInsertNonFullRoot(2);
-  // testBtreeInsertNonFullChild(3);
+  testBtreeInsertNonFullChild(3);
   testBtreeInsert(3);
 }
