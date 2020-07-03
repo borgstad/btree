@@ -173,7 +173,7 @@ void testBtreeBigInsert(int minDegree)
   // inorderTraversal(bt.root, maxDegree);
   for (int i = 0; i < maxDegree + 25; i++)
   {
-    printf("%i\n", i);
+    // printf("%i\n", i);
     assert(btreeSearch(bt.root, i).ok);
   }
 }
@@ -185,5 +185,5 @@ int main()
   // testBtreeSplitChild(4);
   testBtreeInsertNonFullRoot(2);
   testBtreeInsertNonFullChild(3);
-  // testBtreeBigInsert(3);
+  testBtreeBigInsert(3);
 }
