@@ -21,7 +21,3 @@ void diskWrite(const Node node, Id id, int maxDegree);
 void initialize(int listSize, int hashTableSize);
 void registerNode(Id nodeId);
 static void freeNode(Node node);
-
-/* auxiliary functions */
-
-int getDiskOffset(Id id);
