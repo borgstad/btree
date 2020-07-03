@@ -150,68 +150,36 @@ void testBtreeInsertNonFullChild(int minDegree)
   // nodeRoot = diskRead(0, maxDegree);
 }
 
-void printSortedBtree(Node node, int maxDegree)
+void inorderTraversal(Node node, int maxDegree)
 {
-  if (node.leaf == true)
+  if (node.leaf)
   {
     for (int i = 0; i < node.n; i++)
     {
-      printf("%i \n", node.data[i]);
+      printf("%i\n", node.data[i]);
     }
   }
   else
   {
-    Node childNode;
-    for (int i = 0; i < node.n_ids; i++)
+    for (int i = 0; i < node.n; i++)
     {
-      childNode = diskRead(node.ids[i], maxDegree);
-      // printf("n: ", childNode.n);
-      printSortedBtree(childNode, maxDegree);
-      if (i < node.n)
-      {
-        printf("%i -\n", node.data[i]);
-      }
+      inorderTraversal(diskRead(node.ids[i], maxDegree), maxDegree);
+      printf("%i\n", node.data[i]);
     }
+    inorderTraversal(diskRead(node.ids[node.n], maxDegree), maxDegree);
   }
-
-  // Node iter_node;
-  // Node nodeRoot = node;
-
-  // for (int j = 0; j < nodeRoot.n; j++)
-  // {
-  //   printf("%i\n", nodeRoot.data[j]);
-  // }
-  // for (int i = 0; i < nodeRoot.n_ids; i++)
-  // {
-  //   iter_node = diskRead(nodeRoot.ids[i], maxDegree);
-  //   for (int j = 0; j < iter_node.n; j++)
-  //   {
-  //     printf("%i\n", iter_node.data[j]);
-  //   }
-  //   // printf("\n");
-  //   if (i < nodeRoot.n)
-  //   {
-  //     printf("%i -\n", nodeRoot.data[i]);
-  //   }
-  // }
 }
 
 void testBtreeInsert(int minDegree)
 {
   int maxDegree = minDegree * 2 - 1;
   Btree bt = btreeInit(minDegree);
-  // for (int i = 0; i < maxDegree; i++)
-  for (int i = 0; i < maxDegree + 4; i++)
+  for (int i = 0; i < maxDegree + 25; i++)
   {
     bt = btreeInsert(bt, i);
     bt.root = diskRead(bt.id, maxDegree);
   }
-  // bt.root = diskRead(bt.id, maxDegree);
-  printf("\nnids %i\n", bt.root.n_ids);
-  printf("n %i\n\n", bt.root.n);
-  printSortedBtree(bt.root, maxDegree);
-
-  // printf("n %i\n", diskRead(bt.root.ids[1], maxDegree).n);
+  inorderTraversal(bt.root, maxDegree);
 }
 
 int main()
