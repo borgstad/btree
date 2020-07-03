@@ -170,8 +170,9 @@ long long timeInMilliseconds(void)
   return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
 }
 
-void testBtreeBigInsert(int minDegree, int nInsertions)
+void testBtreeBigInsert(int minDegree)
 {
+  int nInsertions = 1000;
   int maxDegree = minDegree * 2 - 1;
   Btree bt = btreeInit(minDegree);
 
@@ -181,6 +182,7 @@ void testBtreeBigInsert(int minDegree, int nInsertions)
     bt = btreeInsert(bt, i);
     bt.root = diskRead(bt.id, maxDegree);
   }
+  assert(500 > timeInMilliseconds() - t);
   // printf("Time in millis: %lli\n", timeInMilliseconds() - t);
   // printf("Time in millis per item: %f\n", (float)(timeInMilliseconds() - t) / nInsertions);
 }
@@ -192,5 +194,5 @@ int main()
   // testBtreeSplitChild(4);
   testBtreeInsertNonFullRoot(2);
   testBtreeInsertNonFullChild(3);
-  testBtreeBigInsert(3, 1000);
+  testBtreeBigInsert(3);
 }
