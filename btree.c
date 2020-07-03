@@ -143,7 +143,7 @@ void btreeInsertNonfull(Node x, Id x_id, int value)
   int i = x.n - 1;
   if (x.leaf)
   {
-    while ((i >= 1) && (value < x.data[i]))
+    while ((i >= 0) && (value < x.data[i]))
     {
       x.data[i + 1] = x.data[i];
       i--;
