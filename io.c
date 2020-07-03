@@ -10,12 +10,16 @@
 /* TODO: fix hack. listSize should be set somewhere else and unallocatedNodes should be dynamically
 allocated */
 static DiskNode diskNode;
+static FILE *fd;
+static int fildes;
 
 void initialize(int listSize, int hashTableSize)
 {
   diskNode = (DiskNode){.n = 0,
                         .listSize = 1000000,
                         .hashTable = createHashTable(10000000)};
+  fd = fopen("index.b", "r+");
+  fildes = fileno(fd);
 }
 
 void registerNode(Id nodeId)
@@ -34,9 +38,6 @@ Node diskRead(Id id, int maxDegree)
       .data = NULL,
       .ids = NULL,
       .n_ids = 0};
-
-  FILE *fd = fopen("index.b", "r");
-  int filedes = fileno(fd);
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
   int sizeIds = sizeof(Id) * (maxDegree + 1);
@@ -47,24 +48,16 @@ Node diskRead(Id id, int maxDegree)
   // printf("read baseOffset: %i, %lu\n", baseOffset, id);
   // printf("re:\t %i\t %i\t %i\n", baseOffset, baseOffset + sizeNodeStruct, baseOffset + sizeNodeStruct + sizeData);
 
-  pread(filedes, &node, sizeNodeStruct, baseOffset);
+  pread(fildes, &node, sizeNodeStruct, baseOffset);
   node.data = data;
   node.ids = ids;
-  pread(filedes, (int *)node.data, sizeData, baseOffset + sizeNodeStruct);
-  pread(filedes, (Id *)node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
-
-  // for (int i = 0; i < maxDegree; i++)
-  //   {
-  //     node.ids[i] = i;
-  //   }
-  fclose(fd);
+  pread(fildes, (int *)node.data, sizeData, baseOffset + sizeNodeStruct);
+  pread(fildes, (Id *)node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
   return node;
 }
 
 void diskWrite(const Node node, Id id, int maxDegree)
 {
-  FILE *fd = fopen("index.b", "r+");
-  int fildes = fileno(fd);
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
   int sizeIds = sizeof(Id) * (maxDegree + 1);
@@ -72,19 +65,11 @@ void diskWrite(const Node node, Id id, int maxDegree)
   int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
   assert(HASHOK == returnCode);
-  // printf("write: %i\t %i\t %i\n", baseOffset, baseOffset + sizeNodeStruct, baseOffset + sizeNodeStruct + sizeData);
-  // printf("write baseOffset: %i, %ld\n", baseOffset, id);
-  // for (int i = 0; i < maxDegree; i++)
-  // {
-  //   printf("%lu\n", node.ids[i]);
-  // }
   int status;
-  // printf("sizeids: %i\n", sizeIds);
   status = pwrite(fildes, &node, sizeNodeStruct, baseOffset);
   status = pwrite(fildes, node.data, sizeData, baseOffset + sizeNodeStruct);
   status = pwrite(fildes, node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
   diskNode.n += 1;
-  fclose(fd);
 }
 
 static void
@@ -92,4 +77,15 @@ freeNode(Node node)
 {
   free(node.data);
   free(node.ids);
+}
+
+void diskClose()
+{
+  int fildes = fileno(fd);
+  fclose(fd);
+}
+
+void diskOpen()
+{
+  fd = fopen("index.b", "r+");
 }

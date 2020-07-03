@@ -18,6 +18,8 @@ typedef struct
 
 Node diskRead(Id id, int maxDegree);
 void diskWrite(const Node node, Id id, int maxDegree);
+void diskClose();
+void diskOpen();
 void initialize(int listSize, int hashTableSize);
 void registerNode(Id nodeId);
 static void freeNode(Node node);
