@@ -20,4 +20,5 @@ typedef struct LinkedList
 
 linkedListStatus addLinkedList(LinkedList *list, Id k, int n);
 linkedListStatus deleteLinkedList(LinkedList *list, Id k);
+linkedListStatus getItemLinkedList(LinkedList *list, Id id, int *value);
 LinkedList *initializeLinkedList(Id id, int n);

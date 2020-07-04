@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "linked_list.h"
 
 linkedListStatus addLinkedList(LinkedList *list, Id k, int n)
@@ -33,6 +34,20 @@ linkedListStatus deleteLinkedList(LinkedList *list, Id k)
             return OK;
         }
         prevList = list;
+        list = list->next;
+    }
+    return NOITEM;
+}
+
+linkedListStatus getItemLinkedList(LinkedList *list, Id id, int *value)
+{
+    while (list->next)
+    {
+        if (id == list->id)
+        {
+            // *value = list->disk_offset;
+            return OK;
+        }
         list = list->next;
     }
     return NOITEM;
