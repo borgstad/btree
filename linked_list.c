@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "linked_list.h"
 
-linkedListStatus addLinkedList(LinkedList *list, Id k)
+linkedListStatus addLinkedList(LinkedList *list, Id k, int n)
 {
-    LinkedList *newListItem = initializeLinkedList(k);
+    LinkedList *newListItem = initializeLinkedList(k, n);
     while (list->next)
     {
         list = list->next;
@@ -12,10 +12,11 @@ linkedListStatus addLinkedList(LinkedList *list, Id k)
     return OK;
 }
 
-LinkedList *initializeLinkedList(Id k)
+LinkedList *initializeLinkedList(Id k, int n)
 {
     LinkedList *listItem = malloc(sizeof(LinkedList));
-    listItem->data = k;
+    listItem->id = k;
+    listItem->disk_offset = n;
     listItem->next = NULL;
     return listItem;
 }
@@ -25,7 +26,7 @@ linkedListStatus deleteLinkedList(LinkedList *list, Id k)
     LinkedList *prevList = list;
     while (list->next)
     {
-        if (k == list->data)
+        if (k == list->id)
         {
             prevList->next = list->next;
             free(list);

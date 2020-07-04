@@ -11,12 +11,13 @@ typedef enum linkedListStatus
 
 typedef struct LinkedList
 {
-    int data;                // satellite information
+    Id id;                   // Id of node
+    int disk_offset;         // disk offset
     struct LinkedList *next; // next item
 } LinkedList;
 
 #endif
 
-linkedListStatus addLinkedList(LinkedList *list, Id k);
+linkedListStatus addLinkedList(LinkedList *list, Id k, int n);
 linkedListStatus deleteLinkedList(LinkedList *list, Id k);
-LinkedList *initializeLinkedList(Id id);
+LinkedList *initializeLinkedList(Id id, int n);
