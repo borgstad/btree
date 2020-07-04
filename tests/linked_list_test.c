@@ -6,7 +6,7 @@
 LinkedList *getLinkedList(int size)
 {
   LinkedList *l = initializeLinkedList((Id)0, 0);
-  for (int i = 1; i < size; i++)
+  for (int i = 1; i < size + 1; i++)
     addLinkedList(l, (Id)i, i);
   return l;
 }
@@ -41,8 +41,23 @@ void testLinkedListDelete(int iterations)
   }
 }
 
+void testLinkedListGet(int iterations)
+{
+  LinkedList *list = getLinkedList(iterations);
+  int *value;
+  for (int i = 0; i < iterations; i++)
+  {
+    assert(OK == getItemLinkedList(list, (Id)i, value));
+  }
+  for (int i = iterations; i < iterations + 10; i++)
+  {
+    assert(NOITEM == getItemLinkedList(list, (Id)i, value));
+  }
+}
+
 int main()
 {
   testLinkedListInsert(5);
   testLinkedListDelete(10);
+  testLinkedListGet(10);
 }
