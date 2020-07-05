@@ -1,11 +1,24 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/random.h>
 #include "hash.h"
+#include "btree.h"
 
+Id *idList;
 
-int
-hashPutTest()
+void randomList(int listLength)
+{
+  Id *randList = malloc(sizeof(Id) * listLength);
+  Id res;
+  for (int i = 0; i < listLength; i++)
+  {
+    getrandom(&randList[i], sizeof(Id), GRND_RANDOM);
+  }
+  idList = randList;
+}
+
+HashTable getHashTable(int nrElements)
 {
   int hashTableSize = 1000000;
   HashTable hashTable = createHashTable(hashTableSize);
@@ -14,94 +27,66 @@ hashPutTest()
   assert(hashTableSize / 10000 == hashTable.unallocatedSize);
   assert(1 == hashTable.curOffset);
   assert(0 == hashTable.unallocatedN);
-  /* Id id = getId(); */
-  /* TODO: cannot test function getId since it is static, what to do? */
-  Id id = 1128974;
-  /* printf("%i\n", hash((unsigned char *) &id, hashTableSize)); */
-  hashPut(&hashTable, id);
+  randomList(nrElements);
 
-  /* printf("test\n"); */
-  int curOffset = hashTable.table[hash((unsigned char *) &id, hashTableSize)];
-  assert(2 == hashTable.curOffset);
-  return 0;
+  int disk_offset, retVal;
+  for (int i = 0; i < nrElements; i++)
+  {
+    assert(i + 1 == hashTable.curOffset);
+    assert(i == hashTable.hashedN);
+    hashPut(&hashTable, idList[i]);
+  }
+  return hashTable;
 }
 
-int
-hashGetTest()
+int hashGetTest(int nrElements)
 {
-  int hashTableSize = 10000000;
-  HashTable hashTable = createHashTable(hashTableSize);
-  srandom(0);
-
-  Id *ids;
-  int idsSize = hashTable.unallocatedSize;
-  ids = malloc(sizeof(Id) * idsSize);
-  Id test = 10000;
-  hash((unsigned char *) &test, hashTableSize);
-
+  HashTable hashTable = getHashTable(nrElements);
   int result;
-  for (int i = 0; i < idsSize; i++)
-    {
-      assert(i == hashTable.hashedN);      
-      ids[i] = (Id) random();
-      result = hashPut(&hashTable, ids[i]);
-      assert(HASHOK == result);
-      assert(0 == hashTable.unallocatedN);
-    }
-  result = hashPut(&hashTable, ids[0]);
-  assert(HASHFULL == result);
-  
-  for (int i = 0; i < idsSize; i++)
-    {
-      /* printf("%i\n", hashGet(&hashTable, ids[i])); */
-      assert(i + 1 == hashGet(&hashTable, ids[i]));
-    }
-  free(ids);
+  int disk_offset;
+  int retVal;
+  for (int i = 0; i < nrElements; i++)
+  {
+    retVal = hashGet(&hashTable, idList[i], &disk_offset);
+    assert(HASHOK == retVal);
+    assert(i + 1 == disk_offset);
+  }
 }
 
-int
-hashDeleteTest()
+// int hashDeleteTest()
+// {
+
+//   int result;
+//   /* add data to hashtable */
+//   ;
+//   for (int i = 0; i < idsSize; i++)
+//   {
+//     ids[i] = (Id)random();
+//     result = hashPut(&hashTable, ids[i]);
+//   }
+//   /* delete data from hashtable, and check that the number of unallocated elements is */
+//   /*   increments */
+//   for (int i = 0; i < 10; i++)
+//   {
+//     assert(i == hashTable.unallocatedN);
+//     hashDelete(&hashTable, ids[i]);
+//   }
+//   /* put elements back into hash table and check that the unallocatedN is decremented */
+//   Id idPut;
+//   int curOffset = hashTable.curOffset;
+//   for (int i = 10; i > 0; i--)
+//   {
+//     idPut = (Id)random();
+//     assert(i == hashTable.unallocatedN);
+//     hashPut(&hashTable, ids[i]);
+//     assert(curOffset == hashTable.curOffset);
+//   }
+// }
+
+int main()
 {
-  int hashTableSize = 10000000;
-  HashTable hashTable = createHashTable(hashTableSize);
-  srandom(0);
-
-  Id *ids;
-  int idsSize = hashTable.unallocatedSize;
-  ids = malloc(sizeof(Id) * idsSize);
-  Id test = 10000;
-  hash((unsigned char *) &test, hashTableSize);
-
-  int result;
-  /* add data to hashtable */
-    ;  for (int i = 0; i < idsSize; i++)
-    {
-      ids[i] = (Id) random();
-      result = hashPut(&hashTable, ids[i]);
-    }
-  /* delete data from hashtable, and check that the number of unallocated elements is */
-  /*   increments */
-  for (int i = 0; i < 10; i++)
-    {
-      assert(i == hashTable.unallocatedN);
-      hashDelete(&hashTable, ids[i]);
-    }
-  /* put elements back into hash table and check that the unallocatedN is decremented */
-  Id idPut;
-  int curOffset = hashTable.curOffset;
-  for (int i = 10; i > 0; i--)
-    {
-      idPut = (Id) random();
-      assert(i == hashTable.unallocatedN);
-      hashPut(&hashTable, ids[i]);
-      assert(curOffset == hashTable.curOffset);
-    }
-}
-
-int
-main()
-{
-  hashPutTest();
-  hashGetTest();
-  hashDeleteTest();
+  printf("--- Hash Test\n");
+  hashGetTest(10000);
+  // hashDeleteTest();
+  printf("--- Hash Test complete\n\n");
 }

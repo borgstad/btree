@@ -18,7 +18,7 @@ void initialize(int listSize, int hashTableSize)
   diskNode = (DiskNode){.n = 0,
                         .listSize = 1000000,
                         .hashTable = createHashTable(10000000)};
-  fd = fopen("index.b", "r+");
+  fd = fopen("index.b", "w+");
   fildes = fileno(fd);
 }
 
@@ -81,7 +81,6 @@ freeNode(Node node)
 
 void diskClose()
 {
-  int fildes = fileno(fd);
   fclose(fd);
 }
 
