@@ -190,12 +190,11 @@ void testBtreeBigInsert(int minDegree)
 int main()
 {
   printf("--- Btree Test\n");
-  // initializeFullBtree(3);
-  // testBtreeSearch(5);
-  // // testBtreeSplitChild(4);
-  // testBtreeInsertNonFullRoot(2);
-  // testBtreeInsertNonFullChild(3);
-  // diskClose();
+  initializeFullBtree(3);
+  testBtreeSearch(5);
+  // testBtreeSplitChild(4);
+  testBtreeInsertNonFullRoot(2);
+  testBtreeInsertNonFullChild(3);
   testBtreeBigInsert(3);
   printf("--- Btree Test complete\n\n");
 }
