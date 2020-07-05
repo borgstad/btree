@@ -1,37 +1,38 @@
 CC=gcc
 CFLAGS=-I. -g
-DEPS = btree.h io.h hash.h linked_list.h
-OBJ = btree.o main.o io.o hash.o linked_list.o
 
-TEST_HASH = tests/hash_test.o
-TEST_BTREE = tests/btree_test.o
-TEST_IO = tests/io_test.o
-TEST_LINKED_LIST = tests/linked_list_test.o
+OBJ_PATH=bin/.obj
+OBJ_PATHS=bin/.obj bin/.obj/tests
+BIN_PATH=bin
 
-TEST_DEP = btree.o io.o hash.o linked_list.o
+SRC := $(wildcard *.c)
+OBJ := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC))
+
+SRC_TEST := $(wildcard tests/*.c)
+OBJ_TEST := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC_TEST))
+
+TESTS_BIN := $(patsubst tests/%.c, $(BIN_PATH)/%, $(SRC_TEST))
 
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+all: run_tests
 
-main: $(OBJ)
-	$(CC) $(OBJ) -o $@
+$(BIN_PATH)/%: $(OBJ) $(OBJ_TEST)
+	$(CC) $(OBJ_PATH)/tests/$*.o $(OBJ) -o $@
 
-test_all: test_btree test_hash
+$(OBJ_PATH)/%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
-tests/%.o: tests/%.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(OBJ_PATH)/tests/%.o: tests/%.c 
+	$(CC) $(CFLAGS) -c $^ -o $@
 
-.PHONY: test_btree
-test_btree: $(TEST_BTREE) $(TEST_DEP)	
-	$(CC) $(TEST_BTREE) $(TEST_DEP) -o $@ && ./test_btree
+$(SRC) $(SRC_TEST): | $(OBJ_PATHS)
 
-test_hash: $(TEST_HASH) $(TEST_DEP)	
-	$(CC) $(TEST_HASH) $(TEST_DEP) -o $@ && ./test_hash
+$(OBJ_PATHS):
+	mkdir -p $@
 
-test_linked_list: $(TEST_LINKED_LIST) $(TEST_DEP)	
-	$(CC) $(TEST_LINKED_LIST) $(TEST_DEP) -o $@ && ./test_linked_list
+.PHONY: run_tests
+run_tests: $(TESTS_BIN) 
+	for BINARY in $$(ls bin); do $(BIN_PATH)/$$BINARY; done
 
-.PHONY: test_io
-test_io: $(TEST_IO) $(TEST_DEP)	
-	$(CC) $(TEST_IO) $(TEST_DEP) -o $@ && ./test_io
+clean: 
+	rm -rf bin
