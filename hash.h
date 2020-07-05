@@ -1,18 +1,19 @@
 #include "btree.h"
-
+#include "linked_list.h"
 
 #ifndef HASH_H
 #define HASH_H
 
-enum hashReturn {
-		 HASHOK = -1,
-		 HASHEMPTY = -2,
-		 HASHFULL = -3
+enum hashReturn
+{
+  HASHOK = -1,
+  HASHEMPTY = -2,
+  HASHFULL = -3
 };
-	     
+
 typedef struct
 {
-  int *table;
+  LinkedList **linkedLists;
   int tableSize;
   int hashedN;
   int hashedMax;
