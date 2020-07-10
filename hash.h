@@ -17,15 +17,11 @@ typedef struct
   int tableSize;
   int hashedN;
   int hashedMax;
-  int curOffset;
-  int unallocatedSize;
-  int *unallocated;
-  int unallocatedN;
 } HashTable;
 #endif
 
 HashTable createHashTable(int tableSize);
 int hash(unsigned char *str, int hashTableSize);
-int hashPut(HashTable *hashTable, Id id);
-int hashGet(const HashTable *hashTable, Id id, int *value);
-int hashDelete(HashTable *hashTable, Id id);
+int hashPut(HashTable *hashTable, BlockId id);
+int hashGet(const HashTable *hashTable, BlockId id, int *value);
+int hashDelete(HashTable *hashTable, BlockId id);

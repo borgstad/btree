@@ -5,19 +5,17 @@
 #include "btree.h"
 #include "storage.h"
 
-static Id getId();
 static int MINDEGREE;
 static int MAXDEGREE;
 static int MAXKEYS;
-
 Btree btreeInit(int minDegree)
 {
   Btree BtreeStruct;
   MINDEGREE = minDegree;
   MAXDEGREE = 2 * minDegree - 1;
   MAXKEYS = 2 * minDegree;
-  initialize(1000000, 10000000);
   Node rootT = btreeAllocateNode(0);
+  initializeStorage();
   rootT.leaf = true;
   diskWrite(rootT, 0, MAXDEGREE);
   BtreeStruct.root = rootT;
@@ -25,15 +23,15 @@ Btree btreeInit(int minDegree)
   return BtreeStruct;
 }
 
-Node btreeAllocateNode(Id id)
+Node btreeAllocateNode(BlockId id)
 {
   int *data;
-  Id *ids;
+  BlockId *ids;
 
-  ids = malloc(MAXKEYS * sizeof(Id));
+  ids = malloc(MAXKEYS * sizeof(BlockId));
   for (int i = 0; i < MAXKEYS; i++)
   {
-    ids[i] = getId();
+    ids[i] = getNewBlockId();
   }
 
   Node node = (Node){
@@ -42,9 +40,6 @@ Node btreeAllocateNode(Id id)
       .data = malloc(MAXDEGREE * sizeof(int)),
       .ids = ids,
       .n_ids = 0};
-  registerNode(id);
-  // TODO: Write on creation or not?
-  // diskWrite(node, id, MAXDEGREE);
   return node;
 }
 
@@ -77,24 +72,16 @@ btreeSearch(const Node node, int k)
   }
 }
 
-static Id
-getId()
-{
-  Id res;
-  getrandom(&res, sizeof(Id), GRND_RANDOM);
-  return res;
-}
-
-void btreeSplitChild(Node x, Id x_id, int index)
+void btreeSplitChild(Node x, BlockId x_id, int index)
 {
   int t = MINDEGREE;
 
   // new node going to id right of x
-  Id z_id = getId();
+  BlockId z_id = getNewBlockId();
   Node z = btreeAllocateNode(z_id);
 
   // node on the left of x, currently full
-  Id y_id = x.ids[index];
+  BlockId y_id = x.ids[index];
   Node y = diskRead(x.ids[index], MAXDEGREE);
 
   z.leaf = y.leaf;
@@ -137,7 +124,7 @@ void btreeSplitChild(Node x, Id x_id, int index)
 }
 
 // insert a value into a btree with a nonfull root
-void btreeInsertNonfull(Node x, Id x_id, int value)
+void btreeInsertNonfull(Node x, BlockId x_id, int value)
 {
   int i = x.n - 1;
   if (x.leaf)
@@ -158,7 +145,7 @@ void btreeInsertNonfull(Node x, Id x_id, int value)
       i--;
     }
     i++;
-    Id x_child_id = x.ids[i];
+    BlockId x_child_id = x.ids[i];
     Node x_child = diskRead(x_child_id, MAXDEGREE);
     if (x_child.n == MAXDEGREE)
     {
@@ -180,7 +167,7 @@ Btree btreeInsert(Btree T, int value)
   Node r = T.root;
   if (r.n == MAXDEGREE)
   {
-    Id newRootId = getId();
+    BlockId newRootId = getNewBlockId();
     Node s = btreeAllocateNode(newRootId);
     T.root = s;
     s.leaf = false;
