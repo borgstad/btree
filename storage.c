@@ -8,8 +8,6 @@
 #include "linked_list.h"
 #include "hash.h"
 
-/* TODO: fix hack. listSize should be set somewhere else and unallocatedNodes should be dynamically
-allocated */
 static Block block;
 static FILE *fd;
 static int fildes;
