@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include "btree.h"
 #include "io.h"
 
@@ -169,10 +170,25 @@ long long timeInMilliseconds(void)
   return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
 }
 
+int getOptimalNodeSize()
+{
+  int pageSize = getpagesize();
+  int size = (pageSize - sizeof(Node)) / sizeof(Id);
+  return size;
+}
+
 void testBtreeBigInsert(int minDegree)
 {
-  int nInsertions = 10000;
-  int maxDegree = minDegree * 2 - 1;
+  // minDegree = getOptimalNodeSize();
+  int nInsertions = 1000;
+
+  minDegree = (getOptimalNodeSize() + 1) / 2;
+  int maxDegree = getOptimalNodeSize() - 1;
+  // minDegree = 200;
+  // int maxDegree = 399;
+
+  // printf("%i %i\n", minDegree, maxDegree);
+
   Btree bt = btreeInit(minDegree);
 
   long t = timeInMilliseconds();
@@ -182,8 +198,8 @@ void testBtreeBigInsert(int minDegree)
     bt.root = diskRead(bt.id, maxDegree);
   }
   // assert(500 > timeInMilliseconds() - t);
+  printf("Time in millis: %lli\n", timeInMilliseconds() - t);
   diskClose();
-  // printf("Time in millis: %lli\n", timeInMilliseconds() - t);
   // printf("Time in millis per item: %f\n", (float)(timeInMilliseconds() - t) / nInsertions);
 }
 
