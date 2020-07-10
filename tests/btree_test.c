@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include "btree.h"
 #include "io.h"
 
@@ -78,7 +79,6 @@ void testBtreeSplitChild(int minDegree)
   nodeRoot = diskRead(0, maxDegree);
   btreeSplitChild(nodeRoot, 0, 3);
   nodeRoot = diskRead(0, maxDegree);
-  // printf("\n");
   for (int i = 0; i < nodeRoot.n_ids; i++)
   {
     iter_node = diskRead(nodeRoot.ids[i], maxDegree);
@@ -141,23 +141,23 @@ void testBtreeInsertNonFullChild(int minDegree)
   btreeInsertNonfull(nodeRoot, 0, 2);
 }
 
-void inorderTraversal(Node node, int maxDegree)
+int *inorderTraversal(Node node, int maxDegree, LinkedList *res)
 {
   if (node.leaf)
   {
     for (int i = 0; i < node.n; i++)
     {
-      printf("%i\n", node.data[i]);
+      addLinkedList(res, 0, node.data[i]);
     }
   }
   else
   {
     for (int i = 0; i < node.n; i++)
     {
-      inorderTraversal(diskRead(node.ids[i], maxDegree), maxDegree);
-      printf("%i\n", node.data[i]);
+      inorderTraversal(diskRead(node.ids[i], maxDegree), maxDegree, res);
+      addLinkedList(res, 0, node.data[i]);
     }
-    inorderTraversal(diskRead(node.ids[node.n], maxDegree), maxDegree);
+    inorderTraversal(diskRead(node.ids[node.n], maxDegree), maxDegree, res);
   }
 }
 
@@ -169,21 +169,54 @@ long long timeInMilliseconds(void)
   return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
 }
 
-void testBtreeBigInsert(int minDegree)
+int getOptimalNodeSize()
 {
-  int nInsertions = 10000;
+  int pageSize = getpagesize();
+  int size = (pageSize - sizeof(Node)) / sizeof(Id);
+  return size;
+}
+
+void testBtreeBigInsert(int minDegree, int nInsertions)
+{
   int maxDegree = minDegree * 2 - 1;
   Btree bt = btreeInit(minDegree);
-
   long t = timeInMilliseconds();
   for (int i = 0; i < nInsertions; i++)
   {
     bt = btreeInsert(bt, i);
     bt.root = diskRead(bt.id, maxDegree);
   }
-  // assert(500 > timeInMilliseconds() - t);
+  long insTime = timeInMilliseconds() - t;
+  printf("Time in millis for %i sorted insertions: %lli\n", nInsertions, insTime);
+  printf("Time in millis for %i sorted insertions: %.6f\n", nInsertions, (float)nInsertions / (float)(insTime));
   diskClose();
-  // printf("Time in millis: %lli\n", timeInMilliseconds() - t);
+}
+
+void testBtreeBigInsertRandom(int minDegree, int nrRandomValues)
+{
+  int maxDegree = minDegree * 2 - 1;
+  Btree bt = btreeInit(minDegree);
+  int *randList = randomList(nrRandomValues);
+
+  long t = timeInMilliseconds();
+  for (int i = 0; i < nrRandomValues; i++)
+  {
+
+    bt = btreeInsert(bt, randList[i]);
+    bt.root = diskRead(bt.id, maxDegree);
+  }
+  long insTime = timeInMilliseconds() - t;
+  LinkedList *res = initializeLinkedList(0, 0);
+  inorderTraversal(bt.root, maxDegree, res);
+  int prevVal = INT32_MIN;
+  while (res != NULL)
+  {
+    assert(prevVal <= res->disk_offset);
+    res = res->next;
+  }
+  printf("Time in millis for %i random insertions: %lli\n", nrRandomValues, insTime);
+  printf("Time in millis for %i random insertions: %.6f\n", nrRandomValues, (float)nrRandomValues / (float)(insTime));
+
   // printf("Time in millis per item: %f\n", (float)(timeInMilliseconds() - t) / nInsertions);
 }
 
@@ -195,6 +228,10 @@ int main()
   // testBtreeSplitChild(4);
   testBtreeInsertNonFullRoot(2);
   testBtreeInsertNonFullChild(3);
-  testBtreeBigInsert(3);
+
+  int minDegree = (getOptimalNodeSize() + 1) / 2;
+  int nrValues = 1000;
+  testBtreeBigInsert(minDegree, nrValues);
+  testBtreeBigInsertRandom(minDegree, nrValues);
   printf("--- Btree Test complete\n\n");
 }
