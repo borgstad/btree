@@ -15,7 +15,7 @@ static int fildes;
 void initializeStorage()
 {
   block = (Block){
-      initializeLinkedList(0),
+      NULL,
       0};
   fd = fopen("index.b", "w+");
   fildes = fileno(fd);
