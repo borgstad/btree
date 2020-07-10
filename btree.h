@@ -12,11 +12,11 @@ typedef uint64_t Id;
 #define NODE_H
 typedef struct Node
 {
-  int n;     // number of keys currently stored in Node
+  int n; // number of keys currently stored in Node
+  int n_ids;
   bool leaf; // is this a leaf?
   int *data; // array of size n
   Id *ids;   // random unique id assigned to each node, for hashing
-  int n_ids;
 } Node;
 
 typedef struct ResultSet
