@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "btree.h"
-#include "io.h"
+#include "storage.h"
 
 int testDiskReadWrite(int minDegree)
 {

@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/random.h>
 #include "btree.h"
-#include "io.h"
+#include "storage.h"
 
 static Id getId();
 static int MINDEGREE;
