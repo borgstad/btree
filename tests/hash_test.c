@@ -2,38 +2,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/random.h>
+#include <inttypes.h>
 #include "hash.h"
 #include "btree.h"
 
-Id *idList;
+BlockId *idList;
 
 void randomList(int listLength)
 {
-  Id *randList = malloc(sizeof(Id) * listLength);
-  Id res;
+  BlockId *randList = malloc(sizeof(BlockId) * listLength);
+  BlockId res;
   for (int i = 0; i < listLength; i++)
   {
-    getrandom(&randList[i], sizeof(Id), GRND_RANDOM);
+    getrandom(&randList[i], sizeof(BlockId), GRND_RANDOM);
   }
   idList = randList;
 }
 
-HashTable getHashTable(int nrElements)
+HashTable getHashTable(int hashTableSize, int nrElementsInsert)
 {
-  int hashTableSize = 1000000;
   HashTable hashTable = createHashTable(hashTableSize);
 
   assert(hashTableSize == hashTable.tableSize);
-  assert(hashTableSize / 10000 == hashTable.unallocatedSize);
-  assert(1 == hashTable.curOffset);
-  assert(0 == hashTable.unallocatedN);
-  randomList(nrElements);
+  randomList(nrElementsInsert);
 
   int disk_offset, retVal;
-  for (int i = 0; i < nrElements; i++)
+  for (int i = 0; i < nrElementsInsert; i++)
   {
-    assert(i + 1 == hashTable.curOffset);
-    assert(i == hashTable.hashedN);
+    // printf("idList %" PRIu32 "\n", idList[i]);
     hashPut(&hashTable, idList[i]);
   }
   return hashTable;
@@ -41,15 +37,15 @@ HashTable getHashTable(int nrElements)
 
 int hashGetTest(int nrElements)
 {
-  HashTable hashTable = getHashTable(nrElements);
+  HashTable hashTable = getHashTable(1000, nrElements);
   int result;
   int disk_offset;
   int retVal;
   for (int i = 0; i < nrElements; i++)
   {
+    // printf("idList %" PRIu32 "\n", idList[i]);
     retVal = hashGet(&hashTable, idList[i], &disk_offset);
     assert(HASHOK == retVal);
-    assert(i + 1 == disk_offset);
   }
 }
 
@@ -86,7 +82,7 @@ int hashGetTest(int nrElements)
 int main()
 {
   printf("--- Hash Test\n");
-  hashGetTest(10000);
+  hashGetTest(1000);
   // hashDeleteTest();
   printf("--- Hash Test complete\n\n");
 }

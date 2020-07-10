@@ -5,9 +5,9 @@
 
 LinkedList *getLinkedList(int size)
 {
-  LinkedList *l = initializeLinkedList((Id)0, 0);
+  LinkedList *l = initializeLinkedList(0);
   for (int i = 1; i < size; i++)
-    addLinkedList(l, (Id)i, i);
+    addLinkedList(l, i);
   return l;
 }
 
@@ -16,8 +16,7 @@ void testLinkedListInsert(int iterations)
   LinkedList *l = getLinkedList(iterations);
   for (int i = 0; i < iterations; i++)
   {
-    assert((Id)i == l->id);
-    assert(i == l->disk_offset);
+    assert(i == l->blockId);
     l = l->next;
   }
 }
@@ -35,7 +34,7 @@ void testLinkedListDelete(int iterations)
 
     for (int i = 0; i < 3; i++)
     {
-      assert(itemToDelete[i] != list->id);
+      assert(itemToDelete[i] != list->blockId);
     }
     list = list->next;
   }
@@ -47,11 +46,11 @@ void testLinkedListGet(int iterations)
   int value;
   for (int i = 0; i < iterations; i++)
   {
-    assert(OK == getItemLinkedList(list, (Id)i, &value));
+    assert(OK == getItemLinkedList(list, (BlockId)i, &value));
   }
   for (int i = iterations; i < iterations + 10; i++)
   {
-    assert(NOITEM == getItemLinkedList(list, (Id)i, value));
+    assert(NOITEM == getItemLinkedList(list, (BlockId)i, value));
   }
 }
 
