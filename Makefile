@@ -4,13 +4,14 @@ CFLAGS=-I. -g
 OBJ_PATH=bin/.obj
 OBJ_PATHS=bin/.obj bin/.obj/tests
 BIN_PATH=bin
+TEST_PATH=tests
 
-SRC := $(wildcard *.c)
+SRC := btree.c linked_list.c hash.c storage.c
 OBJ := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC))
 
-SRC_TEST := $(wildcard tests/*.c)
+SRC_TEST := $(TEST_PATH)/btree_test.c $(TEST_PATH)/hash_test.c \
+			$(TEST_PATH)/linked_list_test.c $(TEST_PATH)/storage_test.c
 OBJ_TEST := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC_TEST))
-
 TESTS_BIN := $(patsubst tests/%.c, $(BIN_PATH)/%, $(SRC_TEST))
 
 
