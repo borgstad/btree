@@ -4,7 +4,7 @@
 /* typedef struct Node Node; */
 /* typedef struct Btree Btree; */
 /* typedef struct ResultSet ResultSet; */
-typedef uint64_t Id;
+typedef uint32_t BlockId;
 
 /* extern FILE *fd; */
 
@@ -14,9 +14,9 @@ typedef struct Node
 {
   int n; // number of keys currently stored in Node
   int n_ids;
-  bool leaf; // is this a leaf?
-  int *data; // array of size n
-  Id *ids;   // random unique id assigned to each node, for hashing
+  bool leaf;    // is this a leaf?
+  int *data;    // array of size n
+  BlockId *ids; // random unique id assigned to each node, for hashing
 } Node;
 
 typedef struct ResultSet
@@ -30,13 +30,13 @@ typedef struct ResultSet
 typedef struct
 {
   Node root;
-  Id id;
+  BlockId id;
 } Btree;
 #endif
 
 Btree btreeInit(int minDegree);
-Node btreeAllocateNode(Id id);
+Node btreeAllocateNode(BlockId id);
 ResultSet btreeSearch(const Node node, int k);
-void btreeSplitChild(Node x, Id x_id, int index);
-void btreeInsertNonfull(Node x, Id x_id, int value);
+void btreeSplitChild(Node x, BlockId x_id, int index);
+void btreeInsertNonfull(Node x, BlockId x_id, int value);
 Btree btreeInsert(Btree T, int value);

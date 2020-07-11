@@ -5,33 +5,32 @@
 #include <sys/random.h>
 #include "btree.h"
 #include "storage.h"
+#include "linked_list.h"
 #include "hash.h"
 
-/* TODO: fix hack. listSize should be set somewhere else and unallocatedNodes should be dynamically
-allocated */
-static DiskNode diskNode;
+static Block block;
 static FILE *fd;
 static int fildes;
 
-void initialize(int listSize, int hashTableSize)
+void initializeStorage()
 {
-  diskNode = (DiskNode){.n = 0,
-                        .listSize = 1000000,
-                        .hashTable = createHashTable(10000000)};
+  block = (Block){
+      NULL,
+      0};
   fd = fopen("index.b", "w+");
   fildes = fileno(fd);
 }
 
-void registerNode(Id nodeId)
+BlockId getNewBlockId()
 {
-  hashPut(&diskNode.hashTable, nodeId);
-  diskNode.n += 1;
+  block.curBlockId++;
+  return block.curBlockId;
 }
 
-Node diskRead(Id id, int maxDegree)
+Node diskRead(BlockId id, int maxDegree)
 {
   int *data = malloc(maxDegree * sizeof(int));
-  Id *ids = malloc((maxDegree + 1) * sizeof(Id));
+  BlockId *ids = malloc((maxDegree + 1) * sizeof(BlockId));
   Node node = (Node){
       .n = 0,
       .leaf = true,
@@ -40,10 +39,8 @@ Node diskRead(Id id, int maxDegree)
       .n_ids = 0};
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
-  int sizeIds = sizeof(Id) * (maxDegree + 1);
-  int baseOffset;
-  int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
-  assert(HASHOK == returnCode);
+  int sizeIds = sizeof(BlockId) * (maxDegree + 1);
+  int baseOffset = id;
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
   // printf("read baseOffset: %i, %lu\n", baseOffset, id);
   // printf("re:\t %i\t %i\t %i\n", baseOffset, baseOffset + sizeNodeStruct, baseOffset + sizeNodeStruct + sizeData);
@@ -52,24 +49,22 @@ Node diskRead(Id id, int maxDegree)
   node.data = data;
   node.ids = ids;
   pread(fildes, (int *)node.data, sizeData, baseOffset + sizeNodeStruct);
-  pread(fildes, (Id *)node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
+  pread(fildes, (BlockId *)node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
   return node;
 }
 
-void diskWrite(const Node node, Id id, int maxDegree)
+void diskWrite(const Node node, BlockId id, int maxDegree)
 {
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
-  int sizeIds = sizeof(Id) * (maxDegree + 1);
-  int baseOffset;
-  int returnCode = hashGet(&diskNode.hashTable, id, &baseOffset);
+  int sizeIds = sizeof(BlockId) * (maxDegree + 1);
+  int baseOffset = id;
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
-  assert(HASHOK == returnCode);
   int status;
+  // printf("%i, %i, %i\n", sizeNodeStruct, baseOffset);
   status = pwrite(fildes, &node, sizeNodeStruct, baseOffset);
   status = pwrite(fildes, node.data, sizeData, baseOffset + sizeNodeStruct);
   status = pwrite(fildes, node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
-  diskNode.n += 1;
 }
 
 static void

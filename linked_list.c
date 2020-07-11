@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include "linked_list.h"
 
-linkedListStatus addLinkedList(LinkedList *list, Id k, int n)
+linkedListStatus addLinkedList(LinkedList *list, BlockId n)
 {
-    LinkedList *newListItem = initializeLinkedList(k, n);
+    LinkedList *newListItem = initializeLinkedList(n);
     while (list->next)
     {
         list = list->next;
@@ -13,21 +13,20 @@ linkedListStatus addLinkedList(LinkedList *list, Id k, int n)
     return OK;
 }
 
-LinkedList *initializeLinkedList(Id k, int n)
+LinkedList *initializeLinkedList(BlockId n)
 {
     LinkedList *listItem = malloc(sizeof(LinkedList));
-    listItem->id = k;
-    listItem->disk_offset = n;
+    listItem->blockId = n;
     listItem->next = NULL;
     return listItem;
 }
 
-linkedListStatus deleteLinkedList(LinkedList *list, Id k)
+linkedListStatus deleteLinkedList(LinkedList *list, BlockId n)
 {
     LinkedList *prevList = list;
     while (list->next)
     {
-        if (k == list->id)
+        if (n == list->blockId)
         {
             prevList->next = list->next;
             free(list);
@@ -39,13 +38,13 @@ linkedListStatus deleteLinkedList(LinkedList *list, Id k)
     return NOITEM;
 }
 
-linkedListStatus getItemLinkedList(LinkedList *list, Id id, int *value)
+linkedListStatus getItemLinkedList(LinkedList *list, BlockId blockId, int *value)
 {
     while (list)
     {
-        if (id == list->id)
+        if (blockId == list->blockId)
         {
-            *value = list->disk_offset;
+            *value = list->blockId;
             return OK;
         }
         list = list->next;
