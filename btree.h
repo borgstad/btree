@@ -16,27 +16,27 @@ typedef struct Node
   int n_ids;
   bool leaf;    // is this a leaf?
   int *data;    // array of size n
-  BlockId *ids; // random unique id assigned to each node, for hashing
+  BlockId *ids; // incremental id directly related to disk offset
 } Node;
 
 typedef struct ResultSet
 {
   bool ok; // if false, the node is empty and the result is not legal
-  Node node;
+  Node *node;
   int idx;
 } ResultSet;
 
 /* TODO: minDegree and maxDegree should be a member of btree and not the node  */
 typedef struct
 {
-  Node root;
+  Node *root;
   BlockId id;
 } Btree;
 #endif
 
 Btree btreeInit(int minDegree);
-Node btreeAllocateNode(BlockId id);
-ResultSet btreeSearch(const Node node, int k);
-void btreeSplitChild(Node x, BlockId x_id, int index);
-void btreeInsertNonfull(Node x, BlockId x_id, int value);
+Node *btreeAllocateNode(BlockId id);
+ResultSet btreeSearch(Node *node, int k);
+void btreeSplitChild(Node *x, BlockId x_id, int index);
+void btreeInsertNonfull(Node *x, BlockId x_id, int value);
 Btree btreeInsert(Btree T, int value);

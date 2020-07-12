@@ -23,37 +23,39 @@ void initializeStorage()
 
 BlockId getNewBlockId()
 {
+  BlockId res = block.curBlockId;
   block.curBlockId++;
-  return block.curBlockId;
+  return res;
 }
 
-Node diskRead(BlockId id, int maxDegree)
+Node *diskRead(BlockId id, int maxDegree)
 {
   int *data = malloc(maxDegree * sizeof(int));
   BlockId *ids = malloc((maxDegree + 1) * sizeof(BlockId));
-  Node node = (Node){
-      .n = 0,
-      .leaf = true,
-      .data = NULL,
-      .ids = NULL,
-      .n_ids = 0};
+
+  Node *node = malloc(sizeof(Node));
+  node->n = 0;
+  node->leaf = true;
+  node->data = data;
+  node->ids = ids;
+  node->n_ids = 0;
+
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
   int sizeIds = sizeof(BlockId) * (maxDegree + 1);
   int baseOffset = id;
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
+
   // printf("read baseOffset: %i, %lu\n", baseOffset, id);
   // printf("re:\t %i\t %i\t %i\n", baseOffset, baseOffset + sizeNodeStruct, baseOffset + sizeNodeStruct + sizeData);
 
-  pread(fildes, &node, sizeNodeStruct, baseOffset);
-  node.data = data;
-  node.ids = ids;
-  pread(fildes, (int *)node.data, sizeData, baseOffset + sizeNodeStruct);
-  pread(fildes, (BlockId *)node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
+  pread(fildes, node, sizeNodeStruct, baseOffset);
+  pread(fildes, (int *)node->data, sizeData, baseOffset + sizeNodeStruct);
+  pread(fildes, (BlockId *)node->ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
   return node;
 }
 
-void diskWrite(const Node node, BlockId id, int maxDegree)
+void diskWrite(Node *node, BlockId id, int maxDegree)
 {
   int sizeNodeStruct = sizeof(Node);
   int sizeData = sizeof(int) * maxDegree;
@@ -62,9 +64,9 @@ void diskWrite(const Node node, BlockId id, int maxDegree)
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
   int status;
   // printf("%i, %i, %i\n", sizeNodeStruct, baseOffset);
-  status = pwrite(fildes, &node, sizeNodeStruct, baseOffset);
-  status = pwrite(fildes, node.data, sizeData, baseOffset + sizeNodeStruct);
-  status = pwrite(fildes, node.ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
+  status = pwrite(fildes, node, sizeNodeStruct, baseOffset);
+  status = pwrite(fildes, node->data, sizeData, baseOffset + sizeNodeStruct);
+  status = pwrite(fildes, node->ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
 }
 
 static void
