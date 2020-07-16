@@ -4,18 +4,17 @@
 #include "btree.h"
 #include "linked_list.h"
 
-static Cache *cache;
-
-void initializeCache(int size)
+Cache *initializeCache(int size)
 {
-    cache = malloc(sizeof(cache));
+    Cache *cache = malloc(sizeof(cache));
     cache->cache = NULL,
     cache->nodeMemStatus = createHashTable(10000),
     cache->lru = NULL,
     cache->nodesInMem = 0;
+    return cache;
 }
 
-void addItemCache(BlockId id, Node *node)
+void addItemCache(Cache *cache, BlockId id, Node *node)
 {
     if (!cache->cache)
     {
@@ -29,7 +28,7 @@ void addItemCache(BlockId id, Node *node)
     hashPut(&(cache->nodeMemStatus), id, node);
 }
 
-void *getCacheItem(BlockId id, Node *result)
+void *getCacheItem(Cache *cache, BlockId id, Node *result)
 {
     return hashGet(&(cache->nodeMemStatus), id);
 }
