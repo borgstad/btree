@@ -4,17 +4,23 @@
 #include <sys/random.h>
 #include "btree.h"
 #include "storage.h"
+#include "cache.h"
 
 static int MINDEGREE;
 static int MAXDEGREE;
 static int MAXKEYS;
+
+// TODO: do not take degree as input, use OS pagesize
 Btree btreeInit(int minDegree)
 {
-  BlockId initalId = getNewBlockId();
-  Btree BtreeStruct;
   MINDEGREE = minDegree;
   MAXDEGREE = 2 * minDegree - 1;
   MAXKEYS = 2 * minDegree;
+  // TODO: set either dynamically or according to OS pagesize
+  initializeCache(1000);
+
+  BlockId initalId = getNewBlockId();
+  Btree BtreeStruct;
   Node *rootT = btreeAllocateNode(initalId);
   initializeStorage();
   rootT->leaf = true;
