@@ -4,12 +4,12 @@
 #ifndef HASH_H
 #define HASH_H
 
-enum hashReturn
+typedef enum hashReturn
 {
   HASHOK = -1,
   HASHEMPTY = -2,
   HASHFULL = -3
-};
+} hashReturn;
 
 typedef struct
 {
@@ -22,6 +22,6 @@ typedef struct
 
 HashTable createHashTable(int tableSize);
 int hash(unsigned char *str, int hashTableSize);
-int hashPut(HashTable *hashTable, BlockId id);
-int hashGet(const HashTable *hashTable, BlockId id, int *value);
+int hashPut(HashTable *hashTable, BlockId id, void *data);
+void *hashGet(const HashTable *hashTable, BlockId id);
 int hashDelete(HashTable *hashTable, BlockId id);
