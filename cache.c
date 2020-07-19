@@ -28,7 +28,7 @@ void addItemCache(Cache *cache, BlockId id, Node *node)
     hashPut(&(cache->nodeMemStatus), id, node);
 }
 
-void *getCacheItem(Cache *cache, BlockId id, Node *result)
+void *getCacheItem(Cache *cache, BlockId id)
 {
     return hashGet(&(cache->nodeMemStatus), id);
 }

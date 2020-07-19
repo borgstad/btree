@@ -22,4 +22,4 @@ typedef struct
 
 Cache *initializeCache(int size);
 void addItemCache(Cache *cache, BlockId id, Node *node);
-void *getCacheItem(Cache *cache, BlockId id, Node *result);
+void *getCacheItem(Cache *cache, BlockId id);
