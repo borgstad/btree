@@ -3,11 +3,11 @@
 #include "hash.h"
 #include "btree.h"
 #include "linked_list.h"
+#include "storage.h"
 
 Cache *initializeCache(int size)
 {
     Cache *cache = malloc(sizeof(cache));
-    cache->cache = NULL,
     cache->nodeMemStatus = createHashTable(10000),
     cache->lru = NULL,
     cache->nodesInMem = 0;
@@ -16,19 +16,30 @@ Cache *initializeCache(int size)
 
 void addItemCache(Cache *cache, BlockId id, Node *node)
 {
-    if (!cache->cache)
+    if (!cache->lru)
     {
-        // printf("cache: %i\n", node->n);
-        cache->cache = initializeLinkedList(id, node);
+        cache->lru = initializeLinkedList(id, node);
     }
     else
     {
-        addLinkedList(cache->cache, id, node);
+        addLinkedList(cache->lru, id, node);
     }
     hashPut(&(cache->nodeMemStatus), id, node);
+    cache->nodesInMem++;
 }
 
-void *getCacheItem(Cache *cache, BlockId id, Node *result)
+void *getCacheItem(Cache *cache, BlockId id)
 {
     return hashGet(&(cache->nodeMemStatus), id);
+}
+
+void cacheFlush(Cache *cache, int maxDegree)
+{
+    LinkedList *linkedList = cache->lru;
+    int i = 0;
+    while (linkedList)
+    {
+        diskWrite(linkedList->data, linkedList->blockId, maxDegree);
+        linkedList = linkedList->next;
+    }
 }
