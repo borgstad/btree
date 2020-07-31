@@ -12,12 +12,13 @@ typedef enum linkedListStatus
 typedef struct LinkedList
 {
     BlockId blockId;         // disk offset
+    void *data;              // satellite information
     struct LinkedList *next; // next item
 } LinkedList;
 
 #endif
 
-linkedListStatus addLinkedList(LinkedList *list, BlockId n);
+linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data);
 linkedListStatus deleteLinkedList(LinkedList *list, BlockId n);
-linkedListStatus getItemLinkedList(LinkedList *list, BlockId blockId, int *value);
-LinkedList *initializeLinkedList(BlockId n);
+void *getItemLinkedList(LinkedList *list, BlockId blockId);
+LinkedList *initializeLinkedList(BlockId n, void *data);

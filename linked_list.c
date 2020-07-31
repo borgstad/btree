@@ -1,10 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 #include "linked_list.h"
 
 linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data)
 {
     LinkedList *newListItem = initializeLinkedList(n, data);
+
+    if (!list)
+        return OK;
+
     while (list->next)
     {
         list = list->next;
@@ -13,28 +18,34 @@ linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data)
     return OK;
 }
 
-LinkedList *initializeLinkedList(BlockId n, void *data)
+LinkedList *initializeLinkedList(BlockId blockId, void *data)
 {
     LinkedList *listItem = malloc(sizeof(LinkedList));
-    listItem->blockId = n;
+    listItem->blockId = blockId;
     listItem->data = data;
     listItem->next = NULL;
     return listItem;
 }
 
-linkedListStatus deleteLinkedList(LinkedList *list, BlockId n)
+linkedListStatus deleteLinkedList(LinkedList *list, BlockId blockId)
 {
+    if (!list)
+        return NOITEM;
+
     LinkedList *prevList = list;
-    while (list->next)
+    LinkedList *curList = list->next;
+    // LinkedList *nextList = list->next;
+    int i = 0;
+    while (curList)
     {
-        if (n == list->blockId)
+        if (blockId == curList->blockId)
         {
-            prevList->next = list->next;
-            free(list);
+            prevList->next = curList->next;
+            free(curList);
             return OK;
         }
-        prevList = list;
-        list = list->next;
+        prevList = curList;
+        curList = curList->next;
     }
     return NOITEM;
 }
