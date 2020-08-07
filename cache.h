@@ -23,3 +23,4 @@ Cache *initializeCache(int size);
 void addItemCache(Cache *cache, BlockId id, Node *node);
 void *getCacheItem(Cache *cache, BlockId id);
 void cacheFlush(Cache *cache, int maxDegree);
+void cacheUpdateItem(Cache *cache, BlockId id, Node *node);
