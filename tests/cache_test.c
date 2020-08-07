@@ -32,20 +32,20 @@ int cacheInit(int nrNodes, int minDegree)
 {
   int maxDegree = minDegree * 2 - 1;
   Node **nodes = randomNodes(10, minDegree);
-  initializeCache(100);
+  Cache *cache = initializeCache(100);
   for (int i = 0; i < nrNodes; i++)
   {
-    addItemCache(i, nodes[i]);
+    addItemCache(cache, i, nodes[i]);
   }
   Node *node;
   for (int i = 0; i < nrNodes; i++)
   {
-    node = getCacheItem(i, node);
+    node = getCacheItem(cache, i);
     assert(maxDegree == node->n);
   }
   for (int i = nrNodes; i < nrNodes * 2; i++)
   {
-    node = getCacheItem(i, node);
+    node = getCacheItem(cache, i);
     assert(NULL == node);
   }
 }
