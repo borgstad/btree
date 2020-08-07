@@ -3,9 +3,9 @@
 #include <inttypes.h>
 #include "include/linked_list.h"
 
-linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data)
+linkedListStatus linkedListAdd(LinkedList *list, BlockId n, void *data)
 {
-    LinkedList *newListItem = initializeLinkedList(n, data);
+    LinkedList *newListItem = linkedListInit(n, data);
 
     if (!list)
         return OK;
@@ -18,7 +18,7 @@ linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data)
     return OK;
 }
 
-LinkedList *initializeLinkedList(BlockId blockId, void *data)
+LinkedList *linkedListInit(BlockId blockId, void *data)
 {
     LinkedList *listItem = malloc(sizeof(LinkedList));
     listItem->blockId = blockId;
@@ -27,7 +27,7 @@ LinkedList *initializeLinkedList(BlockId blockId, void *data)
     return listItem;
 }
 
-linkedListStatus deleteLinkedList(LinkedList *list, BlockId blockId)
+linkedListStatus linkedListDelete(LinkedList *list, BlockId blockId)
 {
     if (!list)
         return NOITEM;
@@ -50,7 +50,7 @@ linkedListStatus deleteLinkedList(LinkedList *list, BlockId blockId)
     return NOITEM;
 }
 
-linkedListStatus updateItemLinkedList(LinkedList *list, BlockId blockId, void *data)
+linkedListStatus linkedListUpdate(LinkedList *list, BlockId blockId, void *data)
 {
     while (list)
     {
@@ -65,7 +65,7 @@ linkedListStatus updateItemLinkedList(LinkedList *list, BlockId blockId, void *d
     return NOITEM;
 }
 
-void *getItemLinkedList(LinkedList *list, BlockId blockId)
+void *linkedListGet(LinkedList *list, BlockId blockId)
 {
     while (list)
     {

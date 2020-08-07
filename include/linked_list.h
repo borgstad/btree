@@ -18,8 +18,8 @@ typedef struct LinkedList
 
 #endif
 
-linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data);
-linkedListStatus deleteLinkedList(LinkedList *list, BlockId n);
-void *getItemLinkedList(LinkedList *list, BlockId blockId);
-LinkedList *initializeLinkedList(BlockId n, void *data);
-linkedListStatus updateItemLinkedList(LinkedList *list, BlockId blockId, void *data);
+linkedListStatus linkedListAdd(LinkedList *list, BlockId n, void *data);
+linkedListStatus linkedListDelete(LinkedList *list, BlockId n);
+void *linkedListGet(LinkedList *list, BlockId blockId);
+LinkedList *linkedListInit(BlockId n, void *data);
+linkedListStatus linkedListUpdate(LinkedList *list, BlockId blockId, void *data);

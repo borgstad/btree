@@ -16,5 +16,5 @@ Node *diskRead(BlockId id, int maxDegree);
 void diskWrite(Node *node, BlockId id, int maxDegree);
 void diskClose();
 void diskOpen();
-void initialize(int listSize, int hashTableSize);
-static void freeNode(Node node);
+void diskInit(int listSize, int hashTableSize);
+static void diskFreeNode(Node node);

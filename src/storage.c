@@ -73,7 +73,7 @@ void diskWrite(Node *node, BlockId id, int maxDegree)
 }
 
 static void
-freeNode(Node node)
+diskFreeNode(Node node)
 {
   free(node.data);
   free(node.ids);

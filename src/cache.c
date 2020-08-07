@@ -14,26 +14,26 @@ Cache *initializeCache(int size)
     return cache;
 }
 
-void addItemCache(Cache *cache, BlockId id, Node *node)
+void cacheAdd(Cache *cache, BlockId id, Node *node)
 {
     if (!cache->lru)
     {
-        cache->lru = initializeLinkedList(id, NULL);
+        cache->lru = linkedListInit(id, NULL);
     }
     else
     {
-        addLinkedList(cache->lru, id, NULL);
+        linkedListAdd(cache->lru, id, NULL);
     }
     hashPut(&(cache->nodeMemStatus), id, node);
     cache->nodesInMem++;
 }
 
-void cacheUpdateItem(Cache *cache, BlockId id, Node *node)
+void cacheUpdate(Cache *cache, BlockId id, Node *node)
 {
     hashUpdate(&(cache->nodeMemStatus), id, node);
 }
 
-void *getCacheItem(Cache *cache, BlockId id)
+void *cacheGet(Cache *cache, BlockId id)
 {
     return hashGet(&(cache->nodeMemStatus), id);
 }

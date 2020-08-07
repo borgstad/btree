@@ -16,7 +16,7 @@ void ioInitialize()
 
 Node *ioRead(BlockId id, int maxDegree)
 {
-    Node *node = getCacheItem(cache, id);
+    Node *node = cacheGet(cache, id);
     // cache hit
     if (node)
     {
@@ -29,14 +29,14 @@ Node *ioRead(BlockId id, int maxDegree)
         if (cache->nodesInMem < maxNodesInMem)
         {
             Node *node = diskRead(id, maxDegree);
-            ioAddToCache(id, node);
+            ioCacheAdd(id, node);
             return node;
         }
         // if cache is full, replace first LRU item from the cache
         else
         {
             printf("ioRead cache full\n");
-            // return ioReplaceCache(id, maxDegree);
+            // return ioCacheReplace(id, maxDegree);
         }
     }
 }
@@ -47,43 +47,43 @@ void *ioWrite(Node *node, BlockId id, int maxDegree)
     if (cache->nodesInMem < maxNodesInMem)
     {
         // node is in cache
-        Node *oldNode = getCacheItem(cache, id);
+        Node *oldNode = cacheGet(cache, id);
         if (oldNode)
         {
             // printf("iowrite curval \t id: %i\t val: %i\n", id, oldNode->data[0]);
-            cacheUpdateItem(cache, id, node);
+            cacheUpdate(cache, id, node);
             Node *readRode = ioRead(id, maxDegree);
         }
         else
         {
-            ioAddToCache(id, node);
+            ioCacheAdd(id, node);
             return node;
         }
     }
     // the cache is full
     else
     {
-        ioReplaceCache(id, maxDegree, node);
+        ioCacheReplace(id, maxDegree, node);
     }
 }
 
-void *ioAddToCache(BlockId id, Node *node)
+void *ioCacheAdd(BlockId id, Node *node)
 {
-    addItemCache(cache, id, node);
+    cacheAdd(cache, id, node);
     cache->nodesInMem++;
 }
 
-void *ioReplaceCache(BlockId id, int maxDegree, Node *node)
+void *ioCacheReplace(BlockId id, int maxDegree, Node *node)
 {
     BlockId toWriteBlockId = cache->lru->blockId;
-    Node *toWrite = getCacheItem(cache, toWriteBlockId);
+    Node *toWrite = cacheGet(cache, toWriteBlockId);
     diskWrite(toWrite, toWriteBlockId, maxDegree);
-    deleteLinkedList(cache->lru, toWriteBlockId);
+    linkedListDelete(cache->lru, toWriteBlockId);
     hashDelete(&(cache->nodeMemStatus), toWriteBlockId);
     cache->nodesInMem--;
 
     // insert new item cache->lru;
-    ioAddToCache(id, node);
+    ioCacheAdd(id, node);
 }
 
 void ioFlush(int maxDegree)

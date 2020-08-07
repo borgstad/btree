@@ -156,7 +156,7 @@ void inorderTraversal(Node *node, int maxDegree, LinkedList *res)
     for (int i = 0; i < node->n; i++)
     {
       // printf("%i\n", node->data[i]);
-      addLinkedList(res, node->data[i], node->data[i]);
+      linkedListAdd(res, node->data[i], node->data[i]);
     }
   }
   else
@@ -164,7 +164,7 @@ void inorderTraversal(Node *node, int maxDegree, LinkedList *res)
     for (int i = 0; i < node->n; i++)
     {
       inorderTraversal(ioRead(node->ids[i], maxDegree), maxDegree, res);
-      addLinkedList(res, node->data[i], node->data[i]);
+      linkedListAdd(res, node->data[i], node->data[i]);
     }
     inorderTraversal(ioRead(node->ids[node->n], maxDegree), maxDegree, res);
   }
@@ -214,7 +214,7 @@ void testBtreeBigInsertRandom(int minDegree, int nrRandomValues)
   }
   long insTime = timeInMilliseconds() - t;
 
-  LinkedList *res = initializeLinkedList(0, NULL);
+  LinkedList *res = linkedListInit(0, NULL);
   inorderTraversal(bt.root, maxDegree, res);
   int i = 1;
 
