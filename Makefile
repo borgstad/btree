@@ -10,7 +10,8 @@ SRC := btree.c linked_list.c hash.c storage.c cache.c io.c
 OBJ := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC))
 
 SRC_TEST := $(TEST_PATH)/btree_test.c $(TEST_PATH)/hash_test.c \
-			$(TEST_PATH)/linked_list_test.c $(TEST_PATH)/storage_test.c
+			$(TEST_PATH)/linked_list_test.c $(TEST_PATH)/storage_test.c \
+			$(TEST_PATH)/cache_test.c
 OBJ_TEST := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC_TEST))
 TESTS_BIN := $(patsubst tests/%.c, $(BIN_PATH)/%, $(SRC_TEST))
 
