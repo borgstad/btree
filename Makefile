@@ -12,9 +12,9 @@ SRC := $(SRC_PATH)/btree.c $(SRC_PATH)/linked_list.c $(SRC_PATH)/hash.c \
 		$(SRC_PATH)/storage.c $(SRC_PATH)/cache.c $(SRC_PATH)/io.c
 OBJ := $(patsubst $(SRC_PATH)/%.c, $(OBJ_PATH)/%.o, $(SRC))
 
-SRC_TEST := $(TEST_PATH)/btree_test.c $(TEST_PATH)/hash_test.c \
-			$(TEST_PATH)/linked_list_test.c $(TEST_PATH)/storage_test.c \
-			$(TEST_PATH)/cache_test.c
+SRC_TEST := $(TEST_PATH)/test_btree.c $(TEST_PATH)/test_hash.c \
+			$(TEST_PATH)/test_linked_list.c $(TEST_PATH)/test_storage.c \
+			$(TEST_PATH)/test_cache.c
 OBJ_TEST := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC_TEST))
 TESTS_BIN := $(patsubst tests/%.c, $(BIN_PATH)/%, $(SRC_TEST))
 
