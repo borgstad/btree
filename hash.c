@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "hash.h"
 
 /* djb2 hash function */
@@ -30,7 +31,7 @@ createHashTable(int tableSize)
   return hashTable;
 }
 
-int hashPut(HashTable *hashTable, BlockId id)
+int hashPut(HashTable *hashTable, BlockId id, void *data)
 {
   if (hashTable->hashedN >= hashTable->hashedMax)
   {
@@ -40,47 +41,39 @@ int hashPut(HashTable *hashTable, BlockId id)
   LinkedList *newList;
   if (!hashTable->linkedLists[hashTableIdx])
   {
-    newList = initializeLinkedList(id);
+    newList = initializeLinkedList(id, data);
     hashTable->linkedLists[hashTableIdx] = newList;
   }
   else
   {
-    addLinkedList(hashTable->linkedLists[hashTableIdx], id);
+    addLinkedList(hashTable->linkedLists[hashTableIdx], id, data);
   }
   hashTable->hashedN++;
   return HASHOK;
 }
 
-int hashGet(const HashTable *hashTable, BlockId id, int *value)
+int hashUpdate(HashTable *hashTable, BlockId id, void *data)
+{
+  updateItemLinkedList(hashGetLinkedList(hashTable, id), id, data);
+}
+
+LinkedList *hashGet(HashTable *hashTable, BlockId id)
+{
+
+  return getItemLinkedList(hashGetLinkedList(hashTable, id), id);
+}
+
+LinkedList *hashGetLinkedList(HashTable *hashTable, BlockId id)
 {
   unsigned char *idConv = (unsigned char *)&id;
   int tableSize = hashTable->tableSize;
-  LinkedList *linkedList = hashTable->linkedLists[hash(idConv, tableSize)];
-  // TODO: value is never set
-  int retVal = getItemLinkedList(linkedList, id, value);
-  if (retVal == OK)
-  {
-    return HASHOK;
-  }
-  else
-  {
-    return HASHEMPTY;
-  }
-
-  /* return hashTable -> table[hash((unsigned char *) &id, hashTable -> tableSize)]; */
+  return hashTable->linkedLists[hash(idConv, tableSize)];
 }
 
 int hashDelete(HashTable *hashTable, BlockId id)
 {
   int idx = hash((unsigned char *)&id, hashTable->tableSize);
-  if (hashTable->linkedLists[idx] == HASHEMPTY)
-  {
-    return HASHOK;
-  }
-  if (hashTable->hashedN != 0)
-  {
-    hashTable->linkedLists[idx] = HASHEMPTY;
-    hashTable->hashedN--;
-  }
+  deleteLinkedList(hashTable->linkedLists[idx], id);
+  hashTable->hashedN--;
   return HASHOK;
 }

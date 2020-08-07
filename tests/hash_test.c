@@ -30,7 +30,7 @@ HashTable getHashTable(int hashTableSize, int nrElementsInsert)
   for (int i = 0; i < nrElementsInsert; i++)
   {
     // printf("idList %" PRIu32 "\n", idList[i]);
-    hashPut(&hashTable, idList[i]);
+    hashPut(&hashTable, idList[i], idList[i]);
   }
   return hashTable;
 }
@@ -40,12 +40,11 @@ int hashGetTest(int nrElements)
   HashTable hashTable = getHashTable(1000, nrElements);
   int result;
   int disk_offset;
-  int retVal;
+  BlockId *retVal;
   for (int i = 0; i < nrElements; i++)
   {
-    // printf("idList %" PRIu32 "\n", idList[i]);
-    retVal = hashGet(&hashTable, idList[i], &disk_offset);
-    assert(HASHOK == retVal);
+    retVal = hashGet(&hashTable, idList[i]);
+    assert(idList[i] == retVal);
   }
 }
 

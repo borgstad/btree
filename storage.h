@@ -1,8 +1,8 @@
 #include "hash.h"
 #include "btree.h"
 
-#ifndef storage.h
-#define storage .h
+#ifndef STORAGE_H
+#define STORAGE_H
 
 typedef struct
 {
@@ -12,8 +12,8 @@ typedef struct
 
 #endif
 
-Node diskRead(BlockId id, int maxDegree);
-void diskWrite(const Node node, BlockId id, int maxDegree);
+Node *diskRead(BlockId id, int maxDegree);
+void diskWrite(Node *node, BlockId id, int maxDegree);
 void diskClose();
 void diskOpen();
 void initialize(int listSize, int hashTableSize);
