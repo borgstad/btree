@@ -64,6 +64,9 @@ void diskWrite(Node *node, BlockId id, int maxDegree)
   baseOffset *= (sizeNodeStruct + sizeData + sizeIds);
   int status;
   // printf("%i, %i, %i\n", sizeNodeStruct, baseOffset);
+  // printf("diskwrite %i\n", node->data[0]);
+  // printf("diskwrite %i\n", node->data[1]);
+  // printf("diskwrite %i\n", node->data[2]);
   status = pwrite(fildes, node, sizeNodeStruct, baseOffset);
   status = pwrite(fildes, node->data, sizeData, baseOffset + sizeNodeStruct);
   status = pwrite(fildes, node->ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
