@@ -1,5 +1,5 @@
-#include "btree.h"
-#include "linked_list.h"
+#include "include/btree.h"
+#include "include/linked_list.h"
 
 #ifndef HASH_H
 #define HASH_H

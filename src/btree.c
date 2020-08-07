@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/random.h>
-#include "btree.h"
-#include "io.h"
+#include "include/btree.h"
+#include "include/io.h"
 
 static int MINDEGREE;
 static int MAXDEGREE;

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "hash.h"
+#include "include/hash.h"
 
 /* djb2 hash function */
 int hash(unsigned char *str, int hashTableSize)
@@ -41,12 +41,12 @@ int hashPut(HashTable *hashTable, BlockId id, void *data)
   LinkedList *newList;
   if (!hashTable->linkedLists[hashTableIdx])
   {
-    newList = initializeLinkedList(id, data);
+    newList = linkedListInit(id, data);
     hashTable->linkedLists[hashTableIdx] = newList;
   }
   else
   {
-    addLinkedList(hashTable->linkedLists[hashTableIdx], id, data);
+    linkedListAdd(hashTable->linkedLists[hashTableIdx], id, data);
   }
   hashTable->hashedN++;
   return HASHOK;
@@ -54,13 +54,13 @@ int hashPut(HashTable *hashTable, BlockId id, void *data)
 
 int hashUpdate(HashTable *hashTable, BlockId id, void *data)
 {
-  updateItemLinkedList(hashGetLinkedList(hashTable, id), id, data);
+  linkedListUpdate(hashGetLinkedList(hashTable, id), id, data);
 }
 
 LinkedList *hashGet(HashTable *hashTable, BlockId id)
 {
 
-  return getItemLinkedList(hashGetLinkedList(hashTable, id), id);
+  return linkedListGet(hashGetLinkedList(hashTable, id), id);
 }
 
 LinkedList *hashGetLinkedList(HashTable *hashTable, BlockId id)
@@ -73,7 +73,7 @@ LinkedList *hashGetLinkedList(HashTable *hashTable, BlockId id)
 int hashDelete(HashTable *hashTable, BlockId id)
 {
   int idx = hash((unsigned char *)&id, hashTable->tableSize);
-  deleteLinkedList(hashTable->linkedLists[idx], id);
+  linkedListDelete(hashTable->linkedLists[idx], id);
   hashTable->hashedN--;
   return HASHOK;
 }

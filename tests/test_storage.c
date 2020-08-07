@@ -2,8 +2,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "btree.h"
-#include "storage.h"
+#include "include/btree.h"
+#include "include/storage.h"
 
 int testDiskReadWrite(int minDegree)
 {

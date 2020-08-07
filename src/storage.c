@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/random.h>
-#include "btree.h"
-#include "storage.h"
-#include "linked_list.h"
-#include "hash.h"
+#include "include/btree.h"
+#include "include/storage.h"
+#include "include/linked_list.h"
+#include "include/hash.h"
 
 static Block block;
 static FILE *fd;
@@ -73,7 +73,7 @@ void diskWrite(Node *node, BlockId id, int maxDegree)
 }
 
 static void
-freeNode(Node node)
+diskFreeNode(Node node)
 {
   free(node.data);
   free(node.ids);

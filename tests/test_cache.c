@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
-#include "btree.h"
-#include "storage.h"
-#include "cache.h"
+#include "include/btree.h"
+#include "include/storage.h"
+#include "include/cache.h"
 
 Node **randomNodes(int nrNodes, int minDegree)
 {
@@ -35,17 +35,17 @@ int cacheInit(int nrNodes, int minDegree)
   Cache *cache = initializeCache(100);
   for (int i = 0; i < nrNodes; i++)
   {
-    addItemCache(cache, i, nodes[i]);
+    cacheAdd(cache, i, nodes[i]);
   }
   Node *node;
   for (int i = 0; i < nrNodes; i++)
   {
-    node = getCacheItem(cache, i);
+    node = cacheGet(cache, i);
     assert(maxDegree == node->n);
   }
   for (int i = nrNodes; i < nrNodes * 2; i++)
   {
-    node = getCacheItem(cache, i);
+    node = cacheGet(cache, i);
     assert(NULL == node);
   }
 }

@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <sys/random.h>
 #include <inttypes.h>
-#include "hash.h"
-#include "btree.h"
+#include "include/hash.h"
+#include "include/btree.h"
 
 BlockId *idList;
 
