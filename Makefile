@@ -6,7 +6,7 @@ OBJ_PATHS=bin/.obj bin/.obj/tests
 BIN_PATH=bin
 TEST_PATH=tests
 
-SRC := btree.c linked_list.c hash.c storage.c
+SRC := btree.c linked_list.c hash.c storage.c cache.c io.c
 OBJ := $(patsubst %.c, $(OBJ_PATH)/%.o, $(SRC))
 
 SRC_TEST := $(TEST_PATH)/btree_test.c $(TEST_PATH)/hash_test.c \
