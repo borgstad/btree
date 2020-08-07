@@ -225,6 +225,8 @@ void testBtreeBigInsertRandom(int minDegree, int nrRandomValues)
     assert(prev <= res->data);
     i++;
   }
+  btreeFlush(maxDegree);
+  diskClose();
 }
 
 int main()
@@ -236,7 +238,7 @@ int main()
   testBtreeInsertNonFullRoot(2);
   testBtreeInsertNonFullChild(3);
   int minDegree = 3; //(getOptimalNodeSize() + 1) / 2;
-  int nrValues = 2025;
+  int nrValues = 2024;
   // testBtreeBigInsert(minDegree, nrValues);
   testBtreeBigInsertRandom(minDegree, nrValues);
   printf("--- Btree Test complete\n\n");

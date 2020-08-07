@@ -105,9 +105,9 @@ Btree initializeFullBtree(int minDegree)
 
 int main()
 {
-  printf("---Storage Test\n");
+  printf("--- Storage Test\n");
   testDiskReadWrite(3);
   testBtreeCreateNode(5);
   // initializeFullBtree(10);
-  printf("---Storage Test complete\n\n");
+  printf("--- Storage Test complete\n\n");
 }
