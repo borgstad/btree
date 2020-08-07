@@ -176,17 +176,12 @@ Btree btreeInsert(Btree T, int value)
     s->n = 0;
     s->ids[0] = T.id;
     T.id = newRootId;
-    // ioWrite(s, T.id, MAXDEGREE);
     btreeSplitChild(s, newRootId, 0);
-    // s = ioRead(newRootId, MAXDEGREE);
     btreeInsertNonfull(s, newRootId, value);
-    // s = ioRead(newRootId, MAXDEGREE);
-    // ioWrite(s, T.id, MAXDEGREE);
   }
   else
   {
     btreeInsertNonfull(r, T.id, value);
-    // r = ioRead(T.id, MAXDEGREE);
     T.root = r;
   }
   return T;
