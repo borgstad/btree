@@ -211,7 +211,6 @@ void testBtreeBigInsertRandom(int minDegree, int nrRandomValues)
   for (int i = 0; i < nrRandomValues; i++)
   {
     bt = btreeInsert(bt, randList[i]);
-    // bt = btreeInsert(bt, i);
   }
   long insTime = timeInMilliseconds() - t;
 
@@ -222,7 +221,7 @@ void testBtreeBigInsertRandom(int minDegree, int nrRandomValues)
   while ((res = res->next))
   {
     int prev = res->data;
-    // printf("%i, %i, %i \n", i, prev, res->data);
+    // printf("%i\t %i \n", i, prev);
     assert(prev <= res->data);
     i++;
   }
@@ -232,12 +231,12 @@ int main()
 {
   printf("--- Btree Test\n");
   initializeFullBtree(3);
-  // testBtreeSearch(5);
-  // testBtreeSplitChild(4);
-  // testBtreeInsertNonFullRoot(2);
-  // testBtreeInsertNonFullChild(3);
+  testBtreeSearch(5);
+  testBtreeSplitChild(4);
+  testBtreeInsertNonFullRoot(2);
+  testBtreeInsertNonFullChild(3);
   int minDegree = 3; //(getOptimalNodeSize() + 1) / 2;
-  int nrValues = 160;
+  int nrValues = 2025;
   // testBtreeBigInsert(minDegree, nrValues);
   testBtreeBigInsertRandom(minDegree, nrValues);
   printf("--- Btree Test complete\n\n");
