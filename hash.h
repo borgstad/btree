@@ -23,5 +23,7 @@ typedef struct
 HashTable createHashTable(int tableSize);
 int hash(unsigned char *str, int hashTableSize);
 int hashPut(HashTable *hashTable, BlockId id, void *data);
-void *hashGet(const HashTable *hashTable, BlockId id);
+LinkedList *hashGet(HashTable *hashTable, BlockId id);
 int hashDelete(HashTable *hashTable, BlockId id);
+int hashUpdate(HashTable *hashTable, BlockId id, void *data);
+LinkedList *hashGetLinkedList(HashTable *hashTable, BlockId id);

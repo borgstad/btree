@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "hash.h"
 
 /* djb2 hash function */
@@ -51,25 +52,28 @@ int hashPut(HashTable *hashTable, BlockId id, void *data)
   return HASHOK;
 }
 
-void *hashGet(const HashTable *hashTable, BlockId id)
+int hashUpdate(HashTable *hashTable, BlockId id, void *data)
+{
+  updateItemLinkedList(hashGetLinkedList(hashTable, id), id, data);
+}
+
+LinkedList *hashGet(HashTable *hashTable, BlockId id)
+{
+
+  return getItemLinkedList(hashGetLinkedList(hashTable, id), id);
+}
+
+LinkedList *hashGetLinkedList(HashTable *hashTable, BlockId id)
 {
   unsigned char *idConv = (unsigned char *)&id;
   int tableSize = hashTable->tableSize;
-  LinkedList *linkedList = hashTable->linkedLists[hash(idConv, tableSize)];
-  return getItemLinkedList(linkedList, id);
+  return hashTable->linkedLists[hash(idConv, tableSize)];
 }
 
 int hashDelete(HashTable *hashTable, BlockId id)
 {
   int idx = hash((unsigned char *)&id, hashTable->tableSize);
-  if (hashTable->linkedLists[idx] == HASHEMPTY)
-  {
-    return HASHOK;
-  }
-  if (hashTable->hashedN != 0)
-  {
-    hashTable->linkedLists[idx] = HASHEMPTY;
-    hashTable->hashedN--;
-  }
+  deleteLinkedList(hashTable->linkedLists[idx], id);
+  hashTable->hashedN--;
   return HASHOK;
 }
