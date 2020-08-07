@@ -50,6 +50,21 @@ linkedListStatus deleteLinkedList(LinkedList *list, BlockId blockId)
     return NOITEM;
 }
 
+linkedListStatus updateItemLinkedList(LinkedList *list, BlockId blockId, void *data)
+{
+    while (list)
+    {
+        if (blockId == list->blockId)
+        {
+            list->data = data;
+            Node *d = list->data;
+            return OK;
+        }
+        list = list->next;
+    }
+    return NOITEM;
+}
+
 void *getItemLinkedList(LinkedList *list, BlockId blockId)
 {
     while (list)

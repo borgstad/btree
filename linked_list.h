@@ -22,3 +22,4 @@ linkedListStatus addLinkedList(LinkedList *list, BlockId n, void *data);
 linkedListStatus deleteLinkedList(LinkedList *list, BlockId n);
 void *getItemLinkedList(LinkedList *list, BlockId blockId);
 LinkedList *initializeLinkedList(BlockId n, void *data);
+linkedListStatus updateItemLinkedList(LinkedList *list, BlockId blockId, void *data);
