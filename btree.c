@@ -3,8 +3,7 @@
 #include <unistd.h>
 #include <sys/random.h>
 #include "btree.h"
-#include "storage.h"
-#include "cache.h"
+#include "io.h"
 
 static int MINDEGREE;
 static int MAXDEGREE;
@@ -16,15 +15,13 @@ Btree btreeInit(int minDegree)
   MINDEGREE = minDegree;
   MAXDEGREE = 2 * minDegree - 1;
   MAXKEYS = 2 * minDegree;
-  // TODO: set either dynamically or according to OS pagesize
-  initializeCache(1000);
+  ioInitialize();
 
   BlockId initalId = getNewBlockId();
   Btree BtreeStruct;
   Node *rootT = btreeAllocateNode(initalId);
-  initializeStorage();
   rootT->leaf = true;
-  diskWrite(rootT, initalId, MAXDEGREE);
+  ioWrite(rootT, initalId, MAXDEGREE);
   BtreeStruct.root = rootT;
   BtreeStruct.id = initalId;
   return BtreeStruct;
@@ -71,7 +68,7 @@ btreeSearch(Node *node, int k)
   }
   else
   {
-    Node *childNode = diskRead(node->ids[i], MAXDEGREE);
+    Node *childNode = ioRead(node->ids[i], MAXDEGREE);
     return btreeSearch(childNode, k);
   }
 }
@@ -86,7 +83,7 @@ void btreeSplitChild(Node *x, BlockId x_id, int index)
 
   // node on the left of x, currently full
   BlockId y_id = x->ids[index];
-  Node *y = diskRead(x->ids[index], MAXDEGREE);
+  Node *y = ioRead(x->ids[index], MAXDEGREE);
 
   z->leaf = y->leaf;
   z->n = t - 1;
@@ -106,7 +103,7 @@ void btreeSplitChild(Node *x, BlockId x_id, int index)
   }
   y->n = t - 1;
   // x->n = zero-indexing
-  for (int j = x->n_ids; j >= index; j--)
+  for (int j = x->n; j >= index; j--)
   {
     x->ids[j + 1] = x->ids[j];
   }
@@ -122,9 +119,9 @@ void btreeSplitChild(Node *x, BlockId x_id, int index)
     x->n_ids++;
   }
   x->n_ids++;
-  diskWrite(y, y_id, MAXDEGREE);
-  diskWrite(z, z_id, MAXDEGREE);
-  diskWrite(x, x_id, MAXDEGREE);
+  ioWrite(y, y_id, MAXDEGREE);
+  ioWrite(z, z_id, MAXDEGREE);
+  ioWrite(x, x_id, MAXDEGREE);
 }
 
 // insert a value into a btree with a nonfull root
@@ -140,20 +137,21 @@ void btreeInsertNonfull(Node *x, BlockId x_id, int value)
     }
     x->data[i + 1] = value;
     x->n++;
-    diskWrite(x, x_id, MAXDEGREE);
+    ioWrite(x, x_id, MAXDEGREE);
   }
   else
   {
-    while ((i >= 1) && (value < x->data[i]))
+    // printf("else %i\n", x->data[i]);
+    while ((i >= 0) && (value < x->data[i]))
     {
       i--;
     }
     i++;
     BlockId x_child_id = x->ids[i];
-    Node *x_child = diskRead(x_child_id, MAXDEGREE);
+    Node *x_child = ioRead(x_child_id, MAXDEGREE);
     if (x_child->n == MAXDEGREE)
     {
-      x = diskRead(x_id, MAXDEGREE);
+      x = ioRead(x_id, MAXDEGREE);
       btreeSplitChild(x, x_id, i);
       if (value > x->data[i])
       {
@@ -161,7 +159,7 @@ void btreeInsertNonfull(Node *x, BlockId x_id, int value)
         x_child_id = x->ids[i];
       }
     }
-    x_child = diskRead(x_child_id, MAXDEGREE);
+    x_child = ioRead(x_child_id, MAXDEGREE);
     btreeInsertNonfull(x_child, x_child_id, value);
   }
 }
@@ -178,18 +176,23 @@ Btree btreeInsert(Btree T, int value)
     s->n = 0;
     s->ids[0] = T.id;
     T.id = newRootId;
-    diskWrite(s, T.id, MAXDEGREE);
+    // ioWrite(s, T.id, MAXDEGREE);
     btreeSplitChild(s, newRootId, 0);
-    s = diskRead(newRootId, MAXDEGREE);
+    // s = ioRead(newRootId, MAXDEGREE);
     btreeInsertNonfull(s, newRootId, value);
-    s = diskRead(newRootId, MAXDEGREE);
-    diskWrite(s, T.id, MAXDEGREE);
+    // s = ioRead(newRootId, MAXDEGREE);
+    // ioWrite(s, T.id, MAXDEGREE);
   }
   else
   {
     btreeInsertNonfull(r, T.id, value);
-    r = diskRead(T.id, MAXDEGREE);
+    // r = ioRead(T.id, MAXDEGREE);
     T.root = r;
   }
   return T;
+}
+
+void btreeFlush(int maxDegree)
+{
+  ioFlush(maxDegree);
 }

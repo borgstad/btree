@@ -40,3 +40,4 @@ ResultSet btreeSearch(Node *node, int k);
 void btreeSplitChild(Node *x, BlockId x_id, int index);
 void btreeInsertNonfull(Node *x, BlockId x_id, int value);
 Btree btreeInsert(Btree T, int value);
+void btreeFlush(int maxDegree);
