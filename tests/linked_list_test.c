@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <inttypes.h>
-#include "linked_list.h"
+#include "include/linked_list.h"
 
 LinkedList *getLinkedList(int size)
 {

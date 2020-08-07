@@ -6,9 +6,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <inttypes.h>
-#include "btree.h"
-#include "storage.h"
-#include "io.h"
+#include "include/btree.h"
+#include "include/storage.h"
+#include "include/io.h"
 
 Btree initializeFullBtree(int minDegree)
 {

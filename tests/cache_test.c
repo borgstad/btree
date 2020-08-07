@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
-#include "btree.h"
-#include "storage.h"
-#include "cache.h"
+#include "include/btree.h"
+#include "include/storage.h"
+#include "include/cache.h"
 
 Node **randomNodes(int nrNodes, int minDegree)
 {

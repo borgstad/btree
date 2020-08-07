@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "hash.h"
+#include "include/hash.h"
 
 /* djb2 hash function */
 int hash(unsigned char *str, int hashTableSize)

@@ -1,6 +1,6 @@
-#include "io.h"
-#include "cache.h"
-#include "storage.h"
+#include "include/io.h"
+#include "include/cache.h"
+#include "include/storage.h"
 #include <stdlib.h>
 
 static Cache *cache;
