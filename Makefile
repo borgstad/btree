@@ -20,7 +20,6 @@ TESTS_BIN := $(patsubst tests/%.c, $(BIN_PATH)/%, $(SRC_TEST))
 
 
 all: run_tests
-all: ll
 
 $(BIN_PATH)/%: $(OBJ) $(OBJ_TEST)
 	$(CC) $(OBJ_PATH)/tests/$*.o $(OBJ) -o $@
@@ -42,7 +41,3 @@ run_tests: $(TESTS_BIN)
 
 clean: 
 	rm -rf bin
-
-.PHONY: ll
-ll: 
-	$(error VAR is $(OBJ))
