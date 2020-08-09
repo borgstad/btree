@@ -19,14 +19,14 @@ concurrent, but the supported operations are out-of-core.
 This project has been created to get further experience in C, and have fun with
 algorithms!
 
+
 ## Implementation
-The CLRS implementation is followed directly, and integers are supported as the
-only data type. The `btree.c` module exposes the function `btreeInsert` and
+The CLRS implementation is followed strictly, and integers are supported as the
+only data type. The `btree.c` module exposes the functions `btreeInsert` and
 `btreeSearch` and every optimization and design choice is done to make these operations faster.
 
 In the process of doing this project, I added a hash table,
-linked list, and a cache. These components and their interaction are explained
-in this section. 
+linked list, and a cache. Only the latter will be explained.
 
 
 ### B-tree struct
@@ -37,11 +37,11 @@ The `BlockId` is a strictly monotonically increasing number, uniquely
 identifying each node. This number is also a disk offset, more in this in the
 next subsection.
 
-The size (data, pointers, and metadata) of each node is determined by the
+The size of each node struct is determined by the
 underlying OS page size defined by the POSIX function `getpagesize`. The 
 OS page size is also the unit of I/O and should yield a (minor) optimization.
 
-Creating and inserting data into a B-tree is a simple two step process, using
+Creating and inserting data into the B-tree is a simple two step process, using
 the functions:
 ```C
 Btree btreeInit();
@@ -52,9 +52,10 @@ simply contains a pointer to the root node, and the `BlockId` of the root node.
 `btreeInsert` Takes a `Btree` as input, along with the value to be inserted.
 That is all.
 
+
 ### I/O and caching
 The B-tree uses the read and write functions implemented by the `io` module.
-The `io` module implements LRU-caching for reading and writing. This means that
+The `io` module implements an LRU scheme which decides when to read and write. This means that
 when the B-tree calls the write function for a particular node and the cache is
 not full:
 
@@ -74,11 +75,13 @@ void btreeFlush(int maxDegree);
 ```
 This saves all data to a file `index.b`
 
+
 ### Directory structure
 The project is implemented in C. The `src` directory contains the `.c` source
 files, the `include` directory contains the headers. There is one header per
 source file. The `tests` directory contains test for each of the source files.
 The 
+
 
 ## Testing
 The tests are implemented simply as programs compiled and executed in
