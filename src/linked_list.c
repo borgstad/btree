@@ -3,6 +3,28 @@
 #include <inttypes.h>
 #include "include/linked_list.h"
 
+/**
+ * linkedListInit - initializes a linked list item
+ * 
+ * @blockId: blockid of the node
+ * @data: pointer to data. Can be of type arbitrary
+ */
+LinkedList *linkedListInit(BlockId blockId, void *data)
+{
+    LinkedList *listItem = malloc(sizeof(LinkedList));
+    listItem->blockId = blockId;
+    listItem->data = data;
+    listItem->next = NULL;
+    return listItem;
+}
+
+/**
+ * linkedListAdd - traverses the linked list, and adds the element to the end.
+ * 
+ * @list: list to add element to
+ * @n: blockid
+ * @data: pointer to data
+ */
 linkedListStatus linkedListAdd(LinkedList *list, BlockId n, void *data)
 {
     LinkedList *newListItem = linkedListInit(n, data);
@@ -18,15 +40,13 @@ linkedListStatus linkedListAdd(LinkedList *list, BlockId n, void *data)
     return OK;
 }
 
-LinkedList *linkedListInit(BlockId blockId, void *data)
-{
-    LinkedList *listItem = malloc(sizeof(LinkedList));
-    listItem->blockId = blockId;
-    listItem->data = data;
-    listItem->next = NULL;
-    return listItem;
-}
-
+/**
+ * linkedListDelete - deletes the first element from a linked list, matching the
+ * blockid
+ * 
+ * @list: list to delete from
+ * @blockId: blockid to match
+ */
 linkedListStatus linkedListDelete(LinkedList *list, BlockId blockId)
 {
     if (!list)
@@ -50,6 +70,14 @@ linkedListStatus linkedListDelete(LinkedList *list, BlockId blockId)
     return NOITEM;
 }
 
+/**
+ * linkedListUpdate - updates the pointer of the first linked list elemnt
+ * matching a blockid
+ * 
+ * @list: linked list
+ * @blockId: block id to match
+ * @data: pointer to data to insert instead of current
+ */
 linkedListStatus linkedListUpdate(LinkedList *list, BlockId blockId, void *data)
 {
     while (list)
@@ -65,6 +93,12 @@ linkedListStatus linkedListUpdate(LinkedList *list, BlockId blockId, void *data)
     return NOITEM;
 }
 
+/**
+ * linkedListGet - gets the first data pointer, matching a blockid
+ * 
+ * @list: linked list
+ * @blockId: block id to match
+ */
 void *linkedListGet(LinkedList *list, BlockId blockId)
 {
     while (list)
