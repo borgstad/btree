@@ -17,7 +17,7 @@ Node **randomNodes(int nrNodes, int minDegree)
   Node *node;
   for (int i = 0; i < nrNodes; i++)
   {
-    node = btreeAllocateNode(i);
+    node = btreeAllocateNode();
     node->n = maxDegree;
     for (int j = 0; j < maxDegree; j++)
     {

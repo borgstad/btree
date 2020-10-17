@@ -35,7 +35,7 @@ typedef struct
 #endif
 
 Btree btreeInit(int minDegree);
-Node *btreeAllocateNode(BlockId id);
+Node *btreeAllocateNode();
 ResultSet btreeSearch(Node *node, int k);
 void btreeSplitChild(Node *x, BlockId x_id, int index);
 void btreeInsertNonfull(Node *x, BlockId x_id, int value);

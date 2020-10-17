@@ -30,7 +30,7 @@ Btree initializeFullBtree(int minDegree)
   for (int i = 0; i < maxDegree; i++)
   {
     cur_id = nodeRoot->ids[i];
-    iterNode = btreeAllocateNode(cur_id);
+    iterNode = btreeAllocateNode();
     iterNode->n = maxDegree;
     iterNode->n_ids = 0;
     iterNode->leaf = true;

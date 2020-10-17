@@ -19,7 +19,7 @@ Btree btreeInit(int minDegree)
 
   BlockId initalId = getNewBlockId();
   Btree BtreeStruct;
-  Node *rootT = btreeAllocateNode(initalId);
+  Node *rootT = btreeAllocateNode();
   rootT->leaf = true;
   ioWrite(rootT, initalId, MAXDEGREE);
   BtreeStruct.root = rootT;
@@ -27,7 +27,7 @@ Btree btreeInit(int minDegree)
   return BtreeStruct;
 }
 
-Node *btreeAllocateNode(BlockId id)
+Node *btreeAllocateNode()
 {
   int *data;
   BlockId *ids = malloc(MAXKEYS * sizeof(BlockId));
@@ -79,7 +79,7 @@ void btreeSplitChild(Node *x, BlockId x_id, int index)
 
   // new node going to id right of x
   BlockId z_id = getNewBlockId();
-  Node *z = btreeAllocateNode(z_id);
+  Node *z = btreeAllocateNode();
 
   // node on the left of x, currently full
   BlockId y_id = x->ids[index];
@@ -170,7 +170,7 @@ Btree btreeInsert(Btree T, int value)
   if (r->n == MAXDEGREE)
   {
     BlockId newRootId = getNewBlockId();
-    Node *s = btreeAllocateNode(newRootId);
+    Node *s = btreeAllocateNode();
     T.root = s;
     s->leaf = false;
     s->n = 0;

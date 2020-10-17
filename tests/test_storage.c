@@ -39,7 +39,7 @@ int testBtreeCreateNode(int minDegree)
 
   for (int i = 0; i < nr_nodes; i++)
   {
-    tmp_node = btreeAllocateNode(node->ids[i]);
+    tmp_node = btreeAllocateNode();
     for (int j = 0; j < maxDegree; j++)
     {
       tmp_node->data[j] = i * 10 + 100;
@@ -72,7 +72,7 @@ Btree initializeFullBtree(int minDegree)
   for (int i = 0; i < maxDegree; i++)
   {
     // printf("%i\n", nodeRoot->ids[i]);
-    iterNode = btreeAllocateNode(nodeRoot->ids[i]);
+    iterNode = btreeAllocateNode();
     iterNode->n = maxDegree;
     for (int j = 0; j < maxDegree; j++)
     {
