@@ -12,6 +12,15 @@ static Block block;
 static FILE *fd;
 static int fildes;
 
+/**
+ * initializeStorage - initializes the storage module used by the io
+ * 
+ * The storage module keeps an open file description to a file, 'index.b',
+ * containing the data written to disk. The data on disk in written to the blockid of
+ * the node multiplied by an offset. The blockid is a number starting from 0
+ * (the root node), and each time the btree allocates a new node, the blockid
+ * counter is incremented by 1. 
+ */
 void initializeStorage()
 {
   block = (Block){
@@ -21,6 +30,9 @@ void initializeStorage()
   fildes = fileno(fd);
 }
 
+/**
+ * getNewBlockId - returns a blockid and increments the blocid count by 1
+ */
 BlockId getNewBlockId()
 {
   BlockId res = block.curBlockId;
@@ -28,6 +40,12 @@ BlockId getNewBlockId()
   return res;
 }
 
+/**
+ * diskRead - reads a node from disk, using the blockid as offset
+ * 
+ * @id: blockid of the node to read
+ * @maxDegree: max number of keys for the nodes
+ */
 Node *diskRead(BlockId id, int maxDegree)
 {
   int *data = malloc(maxDegree * sizeof(int));
@@ -55,6 +73,13 @@ Node *diskRead(BlockId id, int maxDegree)
   return node;
 }
 
+/**
+ * diskWrite - writes a node to disk, using the blockid as offset
+ * 
+ * @node: pointer to the node that is to be written
+ * @id: blockid of the node to read
+ * @maxDegree: max number of keys for the nodes
+ */
 void diskWrite(Node *node, BlockId id, int maxDegree)
 {
   int sizeNodeStruct = sizeof(Node);
@@ -72,18 +97,28 @@ void diskWrite(Node *node, BlockId id, int maxDegree)
   status = pwrite(fildes, node->ids, sizeIds, baseOffset + sizeNodeStruct + sizeData);
 }
 
-static void
-diskFreeNode(Node node)
+/**
+ * diskFreeNode - frees a node
+ * 
+ * TODO: not used
+ */
+static void diskFreeNode(Node node)
 {
   free(node.data);
   free(node.ids);
 }
 
+/**
+ * diskClose - closes the open file description
+ */
 void diskClose()
 {
   fclose(fd);
 }
 
+/**
+ * diskOpen - opens 'index.b'
+ */
 void diskOpen()
 {
   fd = fopen("index.b", "r+");
