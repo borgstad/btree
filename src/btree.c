@@ -9,7 +9,15 @@ static int MINDEGREE;
 static int MAXDEGREE;
 static int MAXKEYS;
 
-// TODO: do not take degree as input, use OS pagesize
+/**
+ * btreeInit - initialize a btree
+ * @minDegree: minimum number of keys in each node
+ *
+ * Entry function for the btree. initializes a btree struct, and an associated
+ * node. 
+ * 
+ * TODO: do not take degree as input, use OS pagesize
+ */
 Btree btreeInit(int minDegree)
 {
   MINDEGREE = minDegree;
@@ -27,6 +35,14 @@ Btree btreeInit(int minDegree)
   return BtreeStruct;
 }
 
+/**
+ * btreeAllocateNode - allocates a node
+ * 
+ * A node is allocated together with the max number of pointers to children,
+ * such that * that allocation of children per node only happens once, in this
+ * function. Note that a node does not know its own blockid, this is only known
+ * by its parent.
+ */
 Node *btreeAllocateNode()
 {
   int *data;
@@ -44,8 +60,13 @@ Node *btreeAllocateNode()
   return node;
 }
 
-ResultSet
-btreeSearch(Node *node, int k)
+/**
+ * btreeSearch - searches for a key recursively
+ * 
+ * @node: the start node
+ * @k: value to search for
+ */
+ResultSet btreeSearch(Node *node, int k)
 {
   int i = 0;
   ResultSet resultSet;
@@ -73,6 +94,15 @@ btreeSearch(Node *node, int k)
   }
 }
 
+/**
+ * btreeSplitChild - split child procedure
+ * 
+ * @x: the node to split
+ * @x_id: the id of the node to split
+ * @index: the index to split at
+ * 
+ * Method desribed by Cormen et. al.
+ */
 void btreeSplitChild(Node *x, BlockId x_id, int index)
 {
   int t = MINDEGREE;
@@ -124,7 +154,15 @@ void btreeSplitChild(Node *x, BlockId x_id, int index)
   ioWrite(x, x_id, MAXDEGREE);
 }
 
-// insert a value into a btree with a nonfull root
+/**
+ * btreeInsertNonfull - insert a value into a btree with a nonfull root
+ * 
+ * @x: the node to insert into
+ * @x_id: the id of the node to insert into
+ * @value: the value to insert
+ * 
+ * Method desribed by Cormen et. al.
+ */
 void btreeInsertNonfull(Node *x, BlockId x_id, int value)
 {
   int i = x->n - 1;
@@ -164,6 +202,14 @@ void btreeInsertNonfull(Node *x, BlockId x_id, int value)
   }
 }
 
+/**
+ * btreeInsert - inserts into a btree
+ * 
+ * @T: btree to insert into
+ * @value: value to insert into btree
+ * 
+ * Main function for insertion to a btree. Method desribed by Cormen et. al.
+ */
 Btree btreeInsert(Btree T, int value)
 {
   Node *r = T.root;
