@@ -5,6 +5,14 @@
 #include "include/linked_list.h"
 #include "include/storage.h"
 
+/**
+ * initializeCache - initalizes the cache
+ * @size: size of cache
+ *
+ * The cache struct consists of a hash table and a linked list. The linked list
+ * is a FIFO cache, containing only the blockid of the node.
+ * The hash table contains a pointer to the data.
+ */
 Cache *initializeCache(int size)
 {
     Cache *cache = malloc(sizeof(cache));
@@ -14,6 +22,13 @@ Cache *initializeCache(int size)
     return cache;
 }
 
+/**
+ * cacheAdd - adds an element to the cache. Assumes cache is not full
+ * 
+ * @cache: the cache
+ * @id: blockid of the item
+ * @node: pointer to the node
+ */
 void cacheAdd(Cache *cache, BlockId id, Node *node)
 {
     if (!cache->lru)
@@ -28,22 +43,44 @@ void cacheAdd(Cache *cache, BlockId id, Node *node)
     cache->nodesInMem++;
 }
 
+/**
+ * cacheUpdate - updates a node in the cache
+ * 
+ * @cache: the cache
+ * @id: blockid of the item
+ * @node: pointer to the node to be updated
+ */
 void cacheUpdate(Cache *cache, BlockId id, Node *node)
 {
     hashUpdate(&(cache->nodeMemStatus), id, node);
 }
 
+/**
+ * cacheGet - gets an item from the cache
+ * 
+ * @cache: the cache
+ * @id: blockid of the node to get
+ */
 void *cacheGet(Cache *cache, BlockId id)
 {
     return hashGet(&(cache->nodeMemStatus), id);
 }
 
+/**
+ * cacheFlush - writes everything in the cache to disk
+ * 
+ * @cache: the cache
+ * @maxDegree: number of keys in each node
+ * 
+ * Everything in the cache is written to disk. The cache is not emptied.
+ * 
+ * TODO: empty cache.
+ */
 void cacheFlush(Cache *cache, int maxDegree)
 {
     LinkedList *linkedList = cache->lru;
     while (linkedList)
     {
-        // printf("%i\n", linkedList->blockId);
         BlockId blockId = linkedList->blockId;
         Node *node = hashGet(&(cache->nodeMemStatus), blockId);
         diskWrite(node, blockId, maxDegree);
